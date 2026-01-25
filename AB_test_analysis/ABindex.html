@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Statistical Analysis: Test vs Control</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        /* Help Menu Styles */
+        .navbar {
+            background: linear-gradient(135deg, #2c3e50, #3498db);
+            padding: 15px 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .nav-brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .nav-brand h2 {
+            color: white;
+            margin: 0;
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+        
+        .stats-icon {
+            font-size: 1.8rem;
+            color: #e74c3c;
+        }
+        
+        .nav-menu {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        
+        .help-menu {
+            position: relative;
+        }
+        
+        .help-btn {
+            background: rgba(255, 255, 255, 0.15);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 10px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            font-size: 0.95rem;
+        }
+        
+        .help-btn:hover {
+            background: rgba(255, 255, 255, 0.25);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .help-btn i {
+            font-size: 1.1rem;
+        }
+        
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            right: 0;
+            background: white;
+            min-width: 280px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+            border-radius: 10px;
+            padding: 10px 0;
+            z-index: 1000;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        .dropdown-content a {
+            color: #333;
+            padding: 12px 20px;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transition: all 0.2s ease;
+            border-left: 3px solid transparent;
+        }
+        
+        .dropdown-content a:hover {
+            background: #f8f9fa;
+            color: #2c3e50;
+            border-left: 3px solid #3498db;
+            padding-left: 25px;
+        }
+        
+        .dropdown-content a i {
+            color: #3498db;
+            width: 20px;
+            text-align: center;
+            font-size: 1.1rem;
+        }
+        
+        .file-type {
+            font-size: 0.85rem;
+            color: #7f8c8d;
+            margin-left: auto;
+            background: #ecf0f1;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-weight: 500;
+        }
+        
+        .help-menu:hover .dropdown-content {
+            display: block;
+        }
+        
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .navbar {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+            
+            .nav-menu {
+                width: 100%;
+                justify-content: center;
+            }
+            
+            .dropdown-content {
+                left: 50%;
+                transform: translateX(-50%);
+                right: auto;
+                min-width: 250px;
+            }
+        }
+        
+        /* Font Awesome icons - fallback if not available */
+        .fa {
+            font-family: "Font Awesome 5 Free", "Font Awesome 5 Brands";
+            font-weight: 900;
+        }
+        
+        /* If Font Awesome is not loaded, use Unicode alternatives */
+        .fa-help:before { content: "❓"; }
+        .fa-doc:before { content: "📄"; }
+        .fa-chart:before { content: "📊"; }
+        .fa-download:before { content: "⬇️"; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Navigation Bar with Help Menu -->
+        <nav class="navbar">
+            <div class="nav-brand">
+                <span class="stats-icon">📈</span>
+                <h2>Statistical Analysis Dashboard</h2>
+            </div>
+            
+            <div class="nav-menu">
+                <div class="help-menu">
+                    <button class="help-btn">
+                        <i>❓</i> Help & Documentation
+                        <i style="font-size: 0.8rem;">▼</i>
+                    </button>
+                    <div class="dropdown-content">
+                        <a href="Docs information/Statistical Significance Explained for Leads Generation.docx" target="_blank">
+                            <i>📖</i> Statistical Significance Guide
+                            <span class="file-type">DOCX</span>
+                        </a>
+                        <a href="Docs information/Statistical Analysis.docx" target="_blank">
+                            <i>📊</i> Statistical Analysis Methods
+                            <span class="file-type">DOCX</span>
+                        </a>
+                        <div style="border-top: 1px solid #eee; margin: 10px 0;"></div>
+                        <a href="#upload-help" onclick="showHelp('upload')">
+                            <i>📁</i> CSV Upload Guide
+                        </a>
+                        <a href="#analysis-help" onclick="showHelp('analysis')">
+                            <i>🔍</i> Analysis Methods
+                        </a>
+                        <a href="#interpretation-help" onclick="showHelp('interpretation')">
+                            <i>💡</i> Results Interpretation
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <header>
+            <h1>Statistical Analysis: Test vs Control</h1>
+            <p class="subtitle">Upload CSV files and analyze differences between Test and Control groups</p>
+        </header>
+
+        <!-- Help Modal (will be shown when help links are clicked) -->
+        <div id="helpModal" class="modal" style="display: none; position: fixed; z-index: 1001; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5);">
+            <div style="background-color: white; margin: 10% auto; padding: 30px; border-radius: 15px; width: 80%; max-width: 600px; position: relative;">
+                <span onclick="closeHelp()" style="position: absolute; right: 20px; top: 15px; font-size: 28px; cursor: pointer; color: #7f8c8d;">&times;</span>
+                <h3 id="helpTitle" style="color: #2c3e50; margin-bottom: 20px;"></h3>
+                <div id="helpContent" style="line-height: 1.6;"></div>
+                <button onclick="closeHelp()" style="background: #3498db; color: white; border: none; padding: 10px 25px; border-radius: 5px; cursor: pointer; margin-top: 20px; font-weight: 500;">Close</button>
+            </div>
+        </div>
+
+        <!-- File Upload Section -->
+        <section class="file-upload">
+            <div class="results-grid">
+                <div class="result-card">
+                    <h3>📁 Upload Control Group CSV</h3>
+                    <div class="upload-area" id="controlUploadArea">
+                        <div class="upload-placeholder">
+                            <span class="upload-icon">📊</span>
+                            <p>Drag & drop Control CSV file here</p>
+                            <p class="upload-hint">or click to browse</p>
+                        </div>
+                        <input type="file" id="controlFile" accept=".csv" class="file-input">
+                    </div>
+                    <div class="file-info" id="controlFileInfo">
+                        <p><strong>Required:</strong> CSV file with "control" column</p>
+                    </div>
+                    <div class="upload-preview" id="controlPreview"></div>
+                </div>
+                
+                <div class="result-card">
+                    <h3>📁 Upload Test Group CSV</h3>
+                    <div class="upload-area" id="testUploadArea">
+                        <div class="upload-placeholder">
+                            <span class="upload-icon">🔬</span>
+                            <p>Drag & drop Test CSV file here</p>
+                            <p class="upload-hint">or click to browse</p>
+                        </div>
+                        <input type="file" id="testFile" accept=".csv" class="file-input">
+                    </div>
+                    <div class="file-info" id="testFileInfo">
+                        <p><strong>Required:</strong> CSV file with "test" column</p>
+                    </div>
+                    <div class="upload-preview" id="testPreview"></div>
+                </div>
+            </div>
+            
+            <div class="upload-actions">
+                <button id="analyzeData" class="btn-primary" disabled>Analyze Data</button>
+                <button id="resetData" class="btn-secondary">Reset</button>
+            </div>
+        </section>
+
+        <!-- Data Preview Section -->
+        <section class="data-preview" id="dataPreview" style="display: none;">
+            <div class="result-card">
+                <h3>📋 Data Preview</h3>
+                <div class="results-grid">
+                    <div class="preview-section">
+                        <h4>Control Group Data</h4>
+                        <div class="preview-table" id="controlPreviewTable"></div>
+                    </div>
+                    <div class="preview-section">
+                        <h4>Test Group Data</h4>
+                        <div class="preview-table" id="testPreviewTable"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Sample Information Section -->
+        <section class="sample-info" id="sampleInfo" style="display: none;">
+            <div class="results-grid">
+                <div class="result-card">
+                    <h3>📊 Control Group (Sample 1)</h3>
+                    <div class="stats">
+                        <div class="stat-item">
+                            <label>Size:</label>
+                            <span id="control-size">-</span>
+                        </div>
+                        <div class="stat-item">
+                            <label>Mean:</label>
+                            <span id="control-mean">-</span>
+                        </div>
+                        <div class="stat-item">
+                            <label>Standard Deviation:</label>
+                            <span id="control-std">-</span>
+                        </div>
+                        <div class="stat-item">
+                            <label>Variance:</label>
+                            <span id="control-variance">-</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="result-card">
+                    <h3>🔍 Test Group (Sample 2)</h3>
+                    <div class="stats">
+                        <div class="stat-item">
+                            <label>Size:</label>
+                            <span id="test-size">-</span>
+                        </div>
+                        <div class="stat-item">
+                            <label>Mean:</label>
+                            <span id="test-mean">-</span>
+                        </div>
+                        <div class="stat-item">
+                            <label>Standard Deviation:</label>
+                            <span id="test-std">-</span>
+                        </div>
+                        <div class="stat-item">
+                            <label>Variance:</label>
+                            <span id="test-variance">-</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Histograms Section -->
+        <section class="histograms" id="histogramsSection" style="display: none;">
+            <div class="results-grid">
+                <div class="chart-container">
+                    <canvas id="controlHistogram"></canvas>
+                </div>
+                <div class="chart-container">
+                    <canvas id="testHistogram"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <!-- Statistical Test Results -->
+        <section class="test-results" id="testResults" style="display: none;">
+            <div id="zTestResults" class="result-card">
+                <h3>📈 One-Sample Z-Test Results</h3>
+                <div class="stats">
+                    <div class="stat-item">
+                        <label>Z-Score:</label>
+                            <span id="zScore">-</span>
+                        </div>
+                        <div class="stat-item">
+                            <label>Critical Value (α=0.05):</label>
+                            <span>±1.96</span>
+                        </div>
+                        <div class="stat-item">
+                            <label>P-value:</label>
+                            <span id="pValue">-</span>
+                        </div>
+                        <div class="stat-item">
+                            <label>Conclusion:</label>
+                            <span id="testConclusion" class="conclusion-text">-</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="conclusion" id="conclusionSection">
+                    <h2>🎯 Conclusion</h2>
+                    <p><strong id="conclusion-main">Upload data to see analysis results</strong></p>
+                    <p id="conclusion-details">The analysis will appear here after uploading CSV files.</p>
+                </div>
+            </section>
+
+            <!-- Charts Section -->
+            <section class="charts" id="chartsSection" style="display: none;">
+                <div class="chart-container">
+                    <canvas id="distributionChart"></canvas>
+                </div>
+                
+                <div class="chart-container">
+                    <canvas id="effectSizeChart"></canvas>
+                </div>
+
+                <div class="results-grid">
+                    <div class="result-card">
+                        <h3>📏 Cohen's d Effect Size</h3>
+                        <div class="stats">
+                            <div class="stat-item">
+                                <label>One-sample Cohen's d:</label>
+                                <span id="cohensD">-</span>
+                            </div>
+                            <div class="stat-item">
+                                <label>Effect Size:</label>
+                                <span id="effectSize">-</span>
+                            </div>
+                        </div>
+                        <p class="interpretation">The difference represents <span id="effectUnits">-</span> standard deviation units</p>
+                        
+                        <div class="effect-size-bar">
+                            <div class="effect-marker" id="effectMarker"></div>
+                        </div>
+                        <div class="effect-labels">
+                            <span>Small (0.2)</span>
+                            <span>Medium (0.5)</span>
+                            <span>Large (0.8)</span>
+                            <span>Your Effect</span>
+                        </div>
+                    </div>
+
+                    <div class="result-card">
+                        <h3>⚡ Statistical Power</h3>
+                        <div class="stats">
+                            <div class="stat-item">
+                                <label>Power (1-β):</label>
+                                <span id="statisticalPower">-</span>
+                            </div>
+                            <div class="stat-item">
+                                <label>Confidence Level:</label>
+                                <span>95%</span>
+                            </div>
+                            <div class="stat-item">
+                                <label>Type I Error (α):</label>
+                                <span>5%</span>
+                            </div>
+                            <div class="stat-item">
+                                <label>Type II Error (β):</label>
+                                <span id="type2Error">-</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="chart-container">
+                    <canvas id="confidenceIntervalChart"></canvas>
+                </div>
+            </section>
+
+            <!-- Manual Input Section -->
+            <section class="data-input">
+                <div class="result-card">
+                    <h3>🔧 Manual Input (Alternative)</h3>
+                    <div class="input-grid">
+                        <div class="input-group">
+                            <label>Control Mean:</label>
+                            <input type="number" id="input-control-mean" value="55" step="0.1">
+                        </div>
+                        <div class="input-group">
+                            <label>Control STD:</label>
+                            <input type="number" id="input-control-std" value="10" step="0.1">
+                        </div>
+                        <div class="input-group">
+                            <label>Control Size:</label>
+                            <input type="number" id="input-control-size" value="10000" step="1" min="1">
+                        </div>
+                        <div class="input-group">
+                            <label>Test Mean:</label>
+                            <input type="number" id="input-test-mean" value="66" step="0.1">
+                        </div>
+                        <div class="input-group">
+                            <label>Test STD:</label>
+                            <input type="number" id="input-test-std" value="40" step="0.1">
+                        </div>
+                        <div class="input-group">
+                            <label>Test Size:</label>
+                            <input type="number" id="input-test-size" value="100" step="1" min="1">
+                        </div>
+                    </div>
+                    <button id="updateManualAnalysis" class="btn-primary">Update Manual Analysis</button>
+                    <div class="input-info">
+                        <p><strong>💡 Note:</strong> Use manual input if you don't have CSV files, or to compare with uploaded data.</p>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <script src="scripts.js"></script>
+        <script>
+            // Help system functionality
+            function showHelp(section) {
+                const modal = document.getElementById('helpModal');
+                const title = document.getElementById('helpTitle');
+                const content = document.getElementById('helpContent');
+                
+                const helpContent = {
+                    'upload': {
+                        title: 'CSV Upload Guide',
+                        html: `
+                            <h4>File Requirements:</h4>
+                            <ul>
+                                <li><strong>Format:</strong> CSV (Comma Separated Values)</li>
+                                <li><strong>Required Column:</strong> Column named "control" or "test"</li>
+                                <li><strong>Data Type:</strong> Numerical values only</li>
+                                <li><strong>File Size:</strong> Up to 10MB</li>
+                            </ul>
+                            
+                            <h4>How to Prepare Your CSV:</h4>
+                            <ol>
+                                <li>Create a single column with header "control" or "test"</li>
+                                <li>Add your numerical data below the header</li>
+                                <li>Save as .csv file (not .xlsx)</li>
+                            </ol>
+                            
+                            <h4>Example CSV Structure:</h4>
+                            <pre style="background: #f8f9fa; padding: 10px; border-radius: 5px;">
+control
+45.2
+47.8
+43.1
+48.9
+...
+</pre>
+                        `
+                    },
+                    'analysis': {
+                        title: 'Analysis Methods',
+                        html: `
+                            <h4>Statistical Tests Performed:</h4>
+                            <ul>
+                                <li><strong>One-Sample Z-Test:</strong> Compares sample mean to population mean</li>
+                                <li><strong>Cohen's d:</strong> Measures effect size in standard deviation units</li>
+                                <li><strong>Statistical Power:</strong> Probability of detecting an effect if it exists</li>
+                                <li><strong>Confidence Intervals:</strong> Range of plausible values for the true effect</li>
+                            </ul>
+                            
+                            <h4>Interpretation Guidelines:</h4>
+                            <p><strong>Z-Score:</strong> Values beyond ±1.96 indicate statistical significance (p < 0.05)</p>
+                            <p><strong>P-value:</strong> Probability of observing the results if null hypothesis is true</p>
+                            <p><strong>Effect Size (Cohen's d):</strong></p>
+                            <ul>
+                                <li>Small: 0.2</li>
+                                <li>Medium: 0.5</li>
+                                <li>Large: 0.8</li>
+                            </ul>
+                        `
+                    },
+                    'interpretation': {
+                        title: 'Results Interpretation',
+                        html: `
+                            <h4>How to Read Your Results:</h4>
+                            
+                            <h5>1. Statistical Significance</h5>
+                            <p>If p-value < 0.05, the difference between groups is statistically significant.</p>
+                            
+                            <h5>2. Practical Significance</h5>
+                            <p>Look at Cohen's d effect size:</p>
+                            <ul>
+                                <li><strong>Small Effect (d = 0.2):</strong> Minor practical importance</li>
+                                <li><strong>Medium Effect (d = 0.5):</strong> Moderate practical importance</li>
+                                <li><strong>Large Effect (d = 0.8):</strong> Substantial practical importance</li>
+                            </ul>
+                            
+                            <h5>3. Statistical Power</h5>
+                            <p>Power > 0.8 (80%) indicates adequate sample size to detect effects.</p>
+                            
+                            <h5>4. Confidence Intervals</h5>
+                            <p>If interval doesn't include 0, effect is statistically significant.</p>
+                        `
+                    }
+                };
+                
+                if (helpContent[section]) {
+                    title.textContent = helpContent[section].title;
+                    content.innerHTML = helpContent[section].html;
+                    modal.style.display = 'block';
+                }
+            }
+            
+            function closeHelp() {
+                document.getElementById('helpModal').style.display = 'none';
+            }
+            
+            // Close modal when clicking outside
+            window.onclick = function(event) {
+                const modal = document.getElementById('helpModal');
+                if (event.target == modal) {
+                    modal.style.display = 'none';
+                }
+            };
+            
+            // Add Font Awesome if not loaded (simple fallback)
+            if (!document.querySelector('link[href*="font-awesome"]')) {
+                const faLink = document.createElement('link');
+                faLink.rel = 'stylesheet';
+                faLink.href = 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css';
+                document.head.appendChild(faLink);
+            }
+        </script>
+    </body>
+    </html>

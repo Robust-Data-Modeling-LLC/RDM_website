@@ -1,0 +1,776 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Sales Optimization with Controlled Negative Profit</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <!-- Font Awesome for icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <!-- MathJax for formulas -->
+  <script>
+    window.MathJax = {
+      tex: { inlineMath: [['$', '$'], ['\\(', '\\)']] }
+    };
+  </script>
+  <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <style>
+    :root {
+      --primary: #2563eb;
+      --primary-light: #dbeafe;
+      --secondary: #10b981;
+      --accent: #8b5cf6;
+      --danger: #ef4444;
+      --warning: #f59e0b;
+      --bg: #f8f9fb;
+      --text: #1f2937;
+      --muted: #6b7280;
+      --border: #e5e7eb;
+      --card-bg: #ffffff;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+      background: linear-gradient(135deg, #f8f9fb 0%, #eef2ff 100%);
+      color: var(--text);
+      line-height: 1.7;
+      min-height: 100vh;
+    }
+
+    /* Fixed Header with Help Menu */
+    .header-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 1000;
+      background: white;
+      box-shadow: 0 2px 20px rgba(0, 0, 0, 0.08);
+    }
+
+    .navbar {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 15px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .nav-brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .nav-brand h2 {
+      color: var(--primary);
+      margin: 0;
+      font-size: 1.4rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .stats-icon {
+      font-size: 1.6rem;
+      color: var(--primary);
+    }
+
+    .nav-menu {
+      position: relative;
+    }
+
+    /* Help Menu Styles - Fixed in Top Right */
+    .help-menu {
+      position: relative;
+    }
+
+    .help-btn {
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 8px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 500;
+      transition: all 0.3s ease;
+      font-size: 0.95rem;
+      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
+    }
+
+    .help-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(37, 99, 235, 0.3);
+      background: linear-gradient(135deg, var(--accent), var(--primary));
+    }
+
+    .dropdown-content {
+      display: none;
+      position: absolute;
+      right: 0;
+      top: 100%;
+      background: white;
+      min-width: 300px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.12);
+      border-radius: 12px;
+      padding: 12px 0;
+      z-index: 1001;
+      animation: fadeIn 0.3s ease;
+      border: 1px solid var(--border);
+      margin-top: 8px;
+    }
+
+    .dropdown-content.show {
+      display: block;
+    }
+
+    .dropdown-content a {
+      color: var(--text);
+      padding: 14px 20px;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      transition: all 0.2s ease;
+      border-left: 4px solid transparent;
+    }
+
+    .dropdown-content a:hover {
+      background: var(--primary-light);
+      color: var(--primary);
+      border-left: 4px solid var(--primary);
+      padding-left: 24px;
+    }
+
+    .dropdown-content a i {
+      color: var(--primary);
+      width: 20px;
+      text-align: center;
+      font-size: 1.1rem;
+    }
+
+    .file-type {
+      font-size: 0.8rem;
+      color: var(--muted);
+      margin-left: auto;
+      background: #f3f4f6;
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-weight: 500;
+    }
+
+    .divider {
+      height: 1px;
+      background: var(--border);
+      margin: 12px 20px;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Main Content */
+    .container {
+      max-width: 1000px;
+      margin: 100px auto 40px;
+      background: var(--card-bg);
+      padding: 48px 32px;
+      border-radius: 24px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.8);
+    }
+
+    h1 {
+      font-size: 2.8rem;
+      margin-bottom: 16px;
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      line-height: 1.2;
+    }
+
+    .subtitle {
+      font-size: 1.2rem;
+      color: var(--muted);
+      margin-bottom: 40px;
+      font-weight: 400;
+    }
+
+    h2 {
+      margin-top: 56px;
+      padding: 16px 0;
+      font-size: 1.8rem;
+      color: var(--text);
+      border-bottom: 3px solid var(--primary-light);
+      position: relative;
+    }
+
+    h2:after {
+      content: '';
+      position: absolute;
+      left: 0;
+      bottom: -3px;
+      width: 80px;
+      height: 3px;
+      background: linear-gradient(90deg, var(--primary), var(--accent));
+      border-radius: 3px;
+    }
+
+    p {
+      margin: 20px 0;
+      font-size: 1.1rem;
+      color: var(--text);
+    }
+
+    /* Formula Cards */
+.formula-container {
+  position: relative;
+  margin: 32px 0;
+}
+
+.formula-label {
+  position: absolute;
+  top: -12px;
+  left: 24px;
+  background: linear-gradient(135deg, #2563eb, #8b5cf6);
+  color: white;
+  padding: 6px 18px;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  z-index: 2;
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
+}
+
+.formula-card {
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 32px 24px 24px;
+  overflow-x: auto;
+  border-left: 4px solid #2563eb;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
+}
+
+.formula-explanation {
+  margin-top: 20px;
+  color: #6b7280;
+  font-size: 0.95rem;
+  line-height: 1.6;
+  padding-top: 16px;
+  border-top: 1px dashed #d1d5db;
+}
+
+    /* Highlight Box */
+    .highlight {
+      background: linear-gradient(135deg, var(--primary-light), #e0e7ff);
+      border-left: 4px solid var(--primary);
+      padding: 24px;
+      margin: 40px 0;
+      border-radius: 12px;
+      font-weight: 600;
+      font-size: 1.1rem;
+      color: var(--text);
+      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.1);
+    }
+
+    /* Controls Grid */
+    .controls {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 24px;
+      margin: 32px 0;
+    }
+
+    .control-group {
+      display: flex;
+      flex-direction: column;
+      background: white;
+      padding: 20px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+    }
+
+    .control-group:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+      border-color: var(--primary);
+    }
+
+    .control-group label {
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 8px;
+      font-size: 0.95rem;
+    }
+
+    .control-group input {
+      padding: 12px 16px;
+      font-size: 1rem;
+      border: 2px solid var(--border);
+      border-radius: 8px;
+      transition: all 0.3s ease;
+      background: #fafafa;
+    }
+
+    .control-group input:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+      background: white;
+    }
+
+    /* Chart Container */
+    .chart-container {
+      margin: 40px 0;
+      background: white;
+      padding: 24px;
+      border-radius: 16px;
+      border: 1px solid var(--border);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.04);
+    }
+
+    /* Decision Panel */
+    .decision-panel {
+      margin-top: 32px;
+      padding: 24px;
+      border-radius: 16px;
+      font-weight: 700;
+      font-size: 1.2rem;
+      text-align: center;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+      animation: fadeInUp 0.5s ease;
+    }
+
+    .decision-accept {
+      background: linear-gradient(135deg, #d1fae5, #a7f3d0);
+      border: 2px solid var(--secondary);
+      color: #065f46;
+    }
+
+    .decision-reject {
+      background: linear-gradient(135deg, #fee2e2, #fecaca);
+      border: 2px solid var(--danger);
+      color: #7f1d1d;
+    }
+
+    /* Footer */
+    footer {
+      margin-top: 64px;
+      padding-top: 32px;
+      border-top: 1px solid var(--border);
+      color: var(--muted);
+      font-size: 0.9rem;
+      text-align: center;
+    }
+
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+      .navbar {
+        padding: 12px 16px;
+      }
+
+      .nav-brand h2 {
+        font-size: 1.2rem;
+      }
+
+      .container {
+        margin: 80px 16px 32px;
+        padding: 32px 20px;
+      }
+
+      h1 {
+        font-size: 2.2rem;
+      }
+
+      .controls {
+        grid-template-columns: 1fr;
+      }
+
+      .dropdown-content {
+        position: fixed;
+        top: 70px;
+        left: 16px;
+        right: 16px;
+        min-width: auto;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div class="header-container">
+  <nav class="navbar">
+    <div class="nav-brand">
+      <span class="stats-icon">📈</span>
+      <h2>Sales Optimization System</h2>
+    </div>
+    
+    <div class="nav-menu">
+      <div class="help-menu" id="helpMenu">
+        <button class="help-btn">
+          <i class="fas fa-question-circle"></i> Help & Documentation
+          <i class="fas fa-chevron-down" style="font-size: 0.8rem; margin-left: 4px;"></i>
+        </button>
+        <div class="dropdown-content" id="dropdownContent">
+          <a href="Docs information/Statistical Significance Explained for Leads Generation.docx" target="_blank">
+            <i class="fas fa-book-open"></i> Statistical Significance Guide
+            <span class="file-type">DOCX</span>
+          </a>
+          <a href="Docs information/Statistical Analysis.docx" target="_blank">
+            <i class="fas fa-chart-line"></i> Statistical Analysis Methods
+            <span class="file-type">DOCX</span>
+          </a>
+
+          <div class="divider"></div>
+
+          <a href="#upload-help" onclick="showHelp('upload')">
+            <i class="fas fa-file-upload"></i> CSV Upload Guide
+          </a>
+          <a href="#analysis-help" onclick="showHelp('analysis')">
+            <i class="fas fa-search"></i> Analysis Methods
+          </a>
+          <a href="#interpretation-help" onclick="showHelp('interpretation')">
+            <i class="fas fa-lightbulb"></i> Results Interpretation
+          </a>
+        </div>
+      </div>
+    </div>
+  </nav>
+</div>
+
+<main class="container">
+
+  <h1>Sales Optimization by Controlled Negative Profit</h1>
+  <p class="subtitle">Maximizing Expected Value through Strategic Pricing Decisions</p>
+
+  <p>
+    This interactive dashboard demonstrates a fully operational framework for optimizing sales decisions
+    using expected value rather than per-transaction margin. The system explicitly allows for controlled
+    negative unit economics where strategically rational, enabling more sophisticated pricing strategies.
+  </p>
+
+<h2>Core Objective Function</h2>
+
+<div class="formula-container">
+  <div class="formula-label">Formula</div>
+  <div class="formula-card">
+    $$E = \sum_{i=1}^{N} (P_{\text{lender},i} - P_{\text{advertiser},i}) \cdot p_s(P_{\text{lender},i})$$
+    <div class="formula-explanation">
+      Where $E$ represents the total expected profit across all leads, $P_{\text{lender},i}$ is the price to the lender,
+      $P_{\text{advertiser},i}$ is the cost from the advertiser, and $p_s$ is the probability of sale.
+    </div>
+  </div>
+</div>
+
+<h2>Sale Probability Model</h2>
+
+<div class="formula-container">
+  <div class="formula-label">Formula</div>
+  <div class="formula-card">
+    $$p_s(P_{\text{lender}}) = e^{-k(P_{\text{lender}} - P_{\text{min}})}$$
+    <div class="formula-explanation">
+      Exponential decay model where $k$ represents price elasticity and $P_{\text{min}}$ is the minimum viable price.
+      This captures the intuitive relationship between higher prices and lower conversion probabilities.
+    </div>
+  </div>
+</div>
+
+  <div class="highlight">
+    💡 <strong>Key Insight:</strong> The price that maximizes per-transaction margin is rarely the price that maximizes expected value. 
+    Sometimes accepting a small loss on individual transactions leads to greater overall profitability.
+  </div>
+
+  <h2>Self-Optimizing Pricing Engine</h2>
+  
+  <p>
+    This real-time widget computes the optimal lender price that maximizes expected profit per lead.
+    Adjust the parameters below to see how different scenarios affect the optimal pricing strategy.
+  </p>
+
+  <div class="controls">
+    <div class="control-group">
+      <label for="pAdvertiser">
+        <i class="fas fa-money-bill-wave" style="color: var(--primary); margin-right: 8px;"></i>
+        Advertiser Payout ($P_{\text{advertiser}}$)
+      </label>
+      <input type="number" id="pAdvertiser" value="100" min="0" step="1" />
+    </div>
+
+    <div class="control-group">
+      <label for="pMin">
+        <i class="fas fa-tag" style="color: var(--primary); margin-right: 8px;"></i>
+        Minimum Price ($P_{\text{min}}$)
+      </label>
+      <input type="number" id="pMin" value="100" min="0" step="1" />
+    </div>
+
+    <div class="control-group">
+      <label for="kValue">
+        <i class="fas fa-chart-line" style="color: var(--primary); margin-right: 8px;"></i>
+        Price Elasticity ($k$)
+      </label>
+      <input type="number" step="0.01" id="kValue" value="0.05" min="0.001" max="1" />
+    </div>
+  </div>
+
+  <div class="chart-container">
+    <canvas id="pricingChart" height="180"></canvas>
+  </div>
+  
+  <div class="decision-panel" id="decisionPanel">
+    <p>Adjust parameters above to see the optimal pricing decision...</p>
+  </div>
+
+  <footer>
+    <p>© 2024 · Expected-Value-Driven Sales Optimization Framework</p>
+    <p style="font-size: 0.85rem; margin-top: 8px; color: var(--muted);">
+      Designed for strategic pricing decisions in high-volume lead generation environments
+    </p>
+  </footer>
+
+</main>
+
+<script>
+  // Help Menu Toggle
+  const helpMenu = document.getElementById('helpMenu');
+  const dropdownContent = document.getElementById('dropdownContent');
+
+  helpMenu.addEventListener('click', function(e) {
+    e.stopPropagation();
+    dropdownContent.classList.toggle('show');
+  });
+
+  // Close dropdown when clicking outside
+  document.addEventListener('click', function() {
+    dropdownContent.classList.remove('show');
+  });
+
+  // Chart Implementation
+  const ctx = document.getElementById("pricingChart").getContext("2d");
+  let chart;
+
+  const EPSILON = 0.01; // Minimum meaningful expected profit to ACCEPT
+
+  function optimize() {
+    const P_advertiser = Number(document.getElementById("pAdvertiser").value);
+    const P_min = Number(document.getElementById("pMin").value);
+    const k = Number(document.getElementById("kValue").value);
+
+    const prices = [];
+    const probabilities = [];
+    const expectedProfits = [];
+
+    let bestEV = -Infinity;
+    let bestPrice = null;
+    let bestProb = null;
+
+    const step = 0.5; // finer granularity
+    for (let p = P_min; p <= P_min + 80; p += step) {
+      const prob = Math.exp(-k * (p - P_min));
+      const ev = (p - P_advertiser) * prob;
+
+      prices.push(p.toFixed(1));
+      probabilities.push(prob);
+      expectedProfits.push(ev);
+
+      if (ev > bestEV) {
+        bestEV = ev;
+        bestPrice = p;
+        bestProb = prob;
+      }
+    }
+
+    const isAccept = bestEV > EPSILON;
+    const decisionPanel = document.getElementById("decisionPanel");
+    
+    if (isAccept) {
+      decisionPanel.className = "decision-panel decision-accept";
+      decisionPanel.innerHTML = `
+        <i class="fas fa-check-circle" style="font-size: 2rem; margin-bottom: 16px;"></i>
+        <h3 style="margin-bottom: 12px; font-size: 1.4rem;">ACCEPT LEAD</h3>
+        <p>Optimal Price: <strong>$${bestPrice.toFixed(2)}</strong></p>
+        <p>Expected Profit: <strong>$${bestEV.toFixed(2)}</strong></p>
+        <p>Sale Probability: <strong>${(bestProb * 100).toFixed(1)}%</strong></p>
+      `;
+    } else {
+      decisionPanel.className = "decision-panel decision-reject";
+      decisionPanel.innerHTML = `
+        <i class="fas fa-times-circle" style="font-size: 2rem; margin-bottom: 16px;"></i>
+        <h3 style="margin-bottom: 12px; font-size: 1.4rem;">REJECT LEAD</h3>
+        <p>No lender price yields positive expected value</p>
+        <p style="font-size: 1rem; margin-top: 8px;">Best possible expected value: $${bestEV.toFixed(2)}</p>
+      `;
+    }
+
+    // Color curves based on decision
+    const probColor = isAccept ? "#2563eb" : "#9ca3af";
+    const evColor = isAccept ? "#10b981" : "#9ca3af";
+
+    if (chart) chart.destroy();
+
+    chart = new Chart(ctx, {
+      type: "line",
+      data: {
+        labels: prices,
+        datasets: [
+          {
+            label: "Sale Probability",
+            data: probabilities,
+            yAxisID: "yProb",
+            tension: 0.4,
+            borderColor: probColor,
+            backgroundColor: probColor + "20",
+            borderWidth: 3,
+            fill: true,
+            pointRadius: 0
+          },
+          {
+            label: "Expected Profit per Lead",
+            data: expectedProfits,
+            yAxisID: "yEV",
+            tension: 0.4,
+            borderColor: evColor,
+            backgroundColor: evColor + "20",
+            borderWidth: 3,
+            fill: true,
+            pointRadius: 0
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: true,
+        interaction: { mode: "index", intersect: false },
+        plugins: {
+          legend: {
+            position: 'top',
+            labels: {
+              font: { size: 13 },
+              padding: 20,
+              usePointStyle: true
+            }
+          },
+          tooltip: {
+            backgroundColor: 'rgba(255, 255, 255, 0.95)',
+            titleColor: '#1f2937',
+            bodyColor: '#4b5563',
+            borderColor: '#e5e7eb',
+            borderWidth: 1,
+            cornerRadius: 8,
+            padding: 12,
+            callbacks: {
+              label: function(context) {
+                let val = context.raw;
+                if (context.dataset.label === "Sale Probability") {
+                  return `Probability: ${val.toFixed(3)} (${(val * 100).toFixed(1)}%)`;
+                } else {
+                  return `Expected Profit: $${val.toFixed(2)}`;
+                }
+              }
+            }
+          }
+        },
+        scales: {
+          x: {
+            title: {
+              display: true,
+              text: "Lender Price ($)",
+              font: { size: 14, weight: 'bold' },
+              color: '#4b5563'
+            },
+            grid: { color: '#f3f4f6' }
+          },
+          yProb: {
+            min: 0,
+            max: 1,
+            position: "left",
+            title: {
+              display: true,
+              text: "Probability of Sale",
+              font: { size: 14, weight: 'bold' },
+              color: '#4b5563'
+            },
+            ticks: {
+              callback: function(value) {
+                return (value * 100) + '%';
+              }
+            },
+            grid: { color: '#f3f4f6' }
+          },
+          yEV: {
+            position: "right",
+            title: {
+              display: true,
+              text: "Expected Profit ($)",
+              font: { size: 14, weight: 'bold' },
+              color: '#4b5563'
+            },
+            grid: { drawOnChartArea: false }
+          }
+        }
+      }
+    });
+
+    // Machine-readable output for integration
+    window.pricingDecision = {
+      optimal_price: isAccept ? bestPrice : null,
+      expected_value: bestEV,
+      probability: isAccept ? bestProb : null,
+      decision: isAccept ? "ACCEPT" : "REJECT"
+    };
+  }
+
+  // Initialize with optimized values
+  document.querySelectorAll("input").forEach(input =>
+    input.addEventListener("input", optimize)
+  );
+
+  optimize();
+
+  // Help system functions
+  function showHelp(section) {
+    alert(`Opening help section: ${section}\n\nThis would typically open a detailed help modal or guide.`);
+    dropdownContent.classList.remove('show');
+  }
+</script>
+
+</body>
+</html>

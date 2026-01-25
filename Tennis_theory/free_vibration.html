@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Practical Application of Free Vibrations in a Single Tennis String</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f8f9fa;
+            color: #333;
+            line-height: 1.6;
+            padding: 20px;
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4e8f0 100%);
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            padding: 0;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #0c2461, #1e3799);
+            color: white;
+            padding: 30px 40px;
+            position: relative;
+        }
+        
+        .author-section {
+            display: flex;
+            align-items: center;
+            gap: 25px;
+            margin-bottom: 20px;
+        }
+        
+        .author-photo {
+            width: 100px;
+            height: 140px;
+            border-radius: 8px;
+            object-fit: cover;
+            border: 3px solid white;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .author-info {
+            flex: 1;
+        }
+        
+        .author-name {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+        
+        .author-title {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            margin-bottom: 5px;
+        }
+        
+        .paper-title {
+            font-size: 2rem;
+            font-weight: 700;
+            margin: 15px 0;
+            text-align: center;
+            color: white;
+        }
+        
+        .paper-date {
+            text-align: center;
+            font-size: 1.1rem;
+            opacity: 0.9;
+            margin-top: 10px;
+        }
+        
+        .content {
+            padding: 40px;
+        }
+        
+        .abstract {
+            background-color: #e8f4fc;
+            padding: 25px;
+            border-radius: 10px;
+            margin-bottom: 40px;
+            border-left: 5px solid #1e3799;
+        }
+        
+        .abstract h2 {
+            color: #0c2461;
+            margin-bottom: 15px;
+            font-size: 1.5rem;
+        }
+        
+        .abstract p {
+            font-size: 1.1rem;
+            line-height: 1.7;
+        }
+        
+        h2 {
+            color: #0c2461;
+            font-size: 1.8rem;
+            margin: 35px 0 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #eaeaea;
+        }
+        
+        h3 {
+            color: #1e3799;
+            font-size: 1.4rem;
+            margin: 25px 0 15px;
+        }
+        
+        p {
+            margin-bottom: 18px;
+            font-size: 1.1rem;
+            line-height: 1.7;
+        }
+        
+        .problem-statement {
+            background-color: #f8f9fa;
+            padding: 25px;
+            border-radius: 10px;
+            margin: 25px 0;
+            border: 1px solid #e0e0e0;
+        }
+        
+        .model-section {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 40px;
+            margin: 40px 0;
+        }
+        
+        .model-description {
+            flex: 1;
+            min-width: 300px;
+        }
+        
+        .model-visual {
+            flex: 1;
+            min-width: 300px;
+            text-align: center;
+        }
+        
+        .model-image {
+            max-width: 100%;
+            border-radius: 10px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+            margin-bottom: 15px;
+        }
+        
+        .image-caption {
+            font-size: 0.95rem;
+            color: #666;
+            font-style: italic;
+        }
+        
+        .equation-container {
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border: 1px solid #e0e0e0;
+            overflow-x: auto;
+        }
+        
+        .equation {
+            font-family: 'Cambria Math', 'Times New Roman', serif;
+            font-size: 1.3rem;
+            text-align: center;
+            padding: 15px 0;
+            margin: 15px 0;
+        }
+        
+        .equation-number {
+            color: #666;
+            font-style: italic;
+            text-align: right;
+            margin-top: 5px;
+        }
+        
+        .variable-definition {
+            margin: 20px 0;
+            padding-left: 20px;
+        }
+        
+        .variable {
+            font-weight: 600;
+            color: #0c2461;
+        }
+        
+        .derivation-section {
+            margin: 40px 0;
+            padding: 25px;
+            background-color: #f0f7ff;
+            border-radius: 10px;
+            border: 1px solid #c3d9ff;
+        }
+        
+        .conclusion {
+            background-color: #e8f6ef;
+            padding: 30px;
+            border-radius: 10px;
+            margin: 40px 0;
+            border-left: 5px solid #27ae60;
+        }
+        
+        .conclusion h3 {
+            color: #0c2461;
+            margin-bottom: 15px;
+        }
+        
+        .key-result {
+            background-color: #fff9e6;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 25px 0;
+            border: 1px solid #ffd166;
+        }
+        
+        .key-result h4 {
+            color: #e67e22;
+            margin-bottom: 10px;
+            font-size: 1.2rem;
+        }
+        
+        .footer {
+            text-align: center;
+            padding: 25px;
+            color: #666;
+            font-size: 0.95rem;
+            border-top: 1px solid #eaeaea;
+            margin-top: 40px;
+            background-color: #f8f9fa;
+        }
+        
+        .divider {
+            height: 2px;
+            background: linear-gradient(to right, transparent, #ccc, transparent);
+            margin: 40px 0;
+        }
+        
+        @media (max-width: 768px) {
+            .author-section {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .header, .content {
+                padding: 20px;
+            }
+            
+            .model-section {
+                flex-direction: column;
+            }
+            
+            .paper-title {
+                font-size: 1.6rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="author-section">
+                <img src="./Vibration-2_images/Yuri-CityWalk-70.jpg" alt="Yuri G. PhD" class="author-photo">
+                <div class="author-info">
+                    <h1 class="author-name">Yuri G. PhD</h1>
+                    <p class="author-title">Physics of Sports Research</p>
+                </div>
+            </div>
+            
+            <h1 class="paper-title">Practical Application of Free Vibrations in a Single Tennis String</h1>
+            <p class="paper-date">January 2008</p>
+        </div>
+        
+        <div class="content">
+            <div class="abstract">
+                <h2>Abstract</h2>
+                <p>The purpose of this research is to establish the relationship between the frequency parameters of free vibrations of a tennis string, its length, and the applied tension force.</p>
+                <p>This analysis provides a theoretical foundation for optimizing string tensioning to achieve consistent performance across the entire string bed of a tennis racket.</p>
+            </div>
+            
+            <div class="problem-statement">
+                <h2>Problem Formulation</h2>
+                <p>To solve this problem, we consider a single string of length <span class="variable">L₀</span>, rigidly fixed at both ends with a pre-tensioned force <span class="variable">T₀</span>. To simplify the solution procedure, we examine the vibration of a string with a concentrated mass <span class="variable">m</span>, which is significantly greater than the mass of the string itself.</p>
+                <p>The solution is constructed for elastic vibrations of small amplitude.</p>
+            </div>
+            
+            <div class="model-section">
+                <div class="model-description">
+                    <h3>Mathematical Model</h3>
+                    <p>The calculation scheme of the problem is presented in Figure 1. Two forces act on the string displaced from equilibrium:</p>
+                    
+                    <div class="variable-definition">
+                        <p><span class="variable">T = T₀ + ΔT</span> - Elastic deformation forces of the string</p>
+                        <p><span class="variable">m·d²x/dt²</span> - Inertial force of mass <span class="variable">m</span> movement</p>
+                    </div>
+                    
+                    <p>Where:</p>
+                    <div class="variable-definition">
+                        <p><span class="variable">T₀</span> - Initial static tension of the string</p>
+                        <p><span class="variable">ΔT</span> - Elastic component of string tension caused by its displacement</p>
+                    </div>
+                </div>
+                
+                <div class="model-visual">
+                    <img src="./Vibration-2_images/IMG0005_8106671.JPG" alt="String vibration model" class="model-image">
+                    <p class="image-caption">Fig. 1 - String vibration model with concentrated mass</p>
+                </div>
+            </div>
+            
+            <div class="divider"></div>
+            
+            <div class="derivation-section">
+                <h2>Mathematical Derivation</h2>
+                
+                <h3>Equation of Motion</h3>
+                <p>The equation of motion for the considered model, neglecting the mass of the string itself and resistance forces, has the form:</p>
+                
+                <div class="equation-container">
+                    <div class="equation">
+                        m·d²x/dt² + 2·(T₀ + ΔT)·sin(θ) = 0
+                    </div>
+                    <p class="equation-number">Equation (1)</p>
+                </div>
+                
+                <h3>Small Oscillation Approximation</h3>
+                <p>Considering small oscillations of the system, the deviation angle of mass <span class="variable">m</span> from the equilibrium position can be represented as:</p>
+                
+                <div class="equation-container">
+                    <div class="equation">
+                        sin(θ) ≈ θ = x / (L₀/2)
+                    </div>
+                </div>
+                
+                <p>Introducing an intermediate function <span class="variable">ξ = dx/dt</span>, we transform the differential equation:</p>
+                
+                <div class="equation-container">
+                    <div class="equation">
+                        ξ·dξ/dx + (4T₀/(m·L₀))·x + (4ΔT/(m·L₀))·x = 0
+                    </div>
+                    <p class="equation-number">Equation (2)</p>
+                </div>
+                
+                <h3>Integration and Boundary Conditions</h3>
+                <p>Integrating appropriately and applying boundary conditions (zero velocity at maximum displacement), we obtain:</p>
+                
+                <div class="equation-container">
+                    <div class="equation">
+                        ξ² = (4T₀/(m·L₀))·(x_max² - x²) + (4ΔT/(m·L₀))·(x_max² - x²)
+                    </div>
+                    <p class="equation-number">Equation (3)</p>
+                </div>
+                
+                <p>Where <span class="variable">x_max</span> is the amplitude of oscillations.</p>
+                
+                <h3>Simplification for Small Angles</h3>
+                <p>Considering the smallness of deviation angles, we simplify the equation to:</p>
+                
+                <div class="equation-container">
+                    <div class="equation">
+                        dξ/dx = - (2√(T₀/m)) / √(L₀·(x_max² - x²))
+                    </div>
+                    <p class="equation-number">Equation (4)</p>
+                </div>
+                
+                <h3>Final Integration</h3>
+                <p>Integrating equation (4), we find:</p>
+                
+                <div class="equation-container">
+                    <div class="equation">
+                        ξ = - (2√(T₀/m)) · arcsin(x/x_max) / √L₀ + C
+                    </div>
+                    <p class="equation-number">Equation (5)</p>
+                </div>
+                
+                <p>Substituting the expression for <span class="variable">ξ = dx/dt</span>, we obtain:</p>
+                
+                <div class="equation-container">
+                    <div class="equation">
+                        dx/dt = - (2√(T₀/m)) · arcsin(x/x_max) / √L₀ + C
+                    </div>
+                    <p class="equation-number">Equation (6)</p>
+                </div>
+            </div>
+            
+            <div class="divider"></div>
+            
+            <h2>Frequency of Free Vibrations</h2>
+            
+            <p>Considering small oscillations, we can approximate:</p>
+            
+            <div class="equation-container">
+                <div class="equation">
+                    arcsin(x/x_max) ≈ x/x_max
+                </div>
+            </div>
+            
+            <p>Then the frequency of free vibrations is determined by the expression:</p>
+            
+            <div class="key-result">
+                <h4>Key Result: Natural Frequency Formula</h4>
+                <div class="equation-container">
+                    <div class="equation">
+                        f = (1/π) · √(T₀/(m·L₀))
+                    </div>
+                    <p class="equation-number">Equation (7)</p>
+                </div>
+            </div>
+            
+            <div class="conclusion">
+                <h3>Practical Application</h3>
+                <p>Analyzing formula (7), we can derive practical applications of the obtained solution. Specifically, to ensure equal compliance of strings of different lengths, it is sufficient to maintain equality of their free vibration frequencies.</p>
+                
+                <p>This principle allows for:</p>
+                <ul style="margin-left: 20px; margin-bottom: 15px;">
+                    <li>Optimization of string tensioning patterns</li>
+                    <li>Consistent ball response across the string bed</li>
+                    <li>Improved control and predictability of shots</li>
+                    <li>Better energy transfer from racket to ball</li>
+                </ul>
+                
+                <p>The relationship between tension, length, and vibration frequency provides a scientific basis for stringing techniques that enhance racket performance and player control.</p>
+            </div>
+            
+            <div style="text-align: center; margin: 40px 0; padding: 20px; border-top: 1px dashed #ccc; border-bottom: 1px dashed #ccc;">
+                <p style="color: #666; font-style: italic;">******************************************************************************************</p>
+                <p style="color: #666; font-style: italic;">This analysis establishes the fundamental relationship between string tension, length, and vibration frequency</p>
+                <p style="color: #666; font-style: italic;">for optimized tennis racket performance.</p>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>© 2008 Yuri G. PhD | Physics of Tennis Research Series</p>
+            <p>All images located in "Vibration-2_images" folder | Mathematical derivations based on classical mechanics principles</p>
+        </div>
+    </div>
+</body>
+</html>

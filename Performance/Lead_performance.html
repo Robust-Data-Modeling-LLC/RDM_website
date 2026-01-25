@@ -1,0 +1,907 @@
+﻿<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Lead Sales Performance Analyzer</title>
+
+  <script
+    id="plotly-script"
+    src="https://cdn.plot.ly/plotly-2.25.2.min.js"
+    crossorigin="anonymous"></script>
+
+  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+
+  <style>
+    :root {
+      --primary: #2c3e50;
+      --secondary: #3498db;
+      --accent: #e74c3c;
+      --success: #27ae60;
+      --warning: #f39c12;
+      --light-bg: #f8f9fa;
+      --border: #e1e8ed;
+      --text: #2c3e50;
+      --text-light: #7f8c8d;
+      --radius: 8px;
+      --shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding: 20px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      color: var(--text);
+    }
+
+    .container {
+      max-width: 1000px; /* Reduced from 1400px to limit width */
+      margin: 0 auto;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 2rem;
+      color: white;
+    }
+
+    header h1 {
+      font-size: 2.2rem; /* Slightly smaller for better fit */
+      margin-bottom: 0.5rem;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+    }
+
+    .subtitle {
+      font-size: 1rem;
+      opacity: 0.9;
+      max-width: 600px;
+      margin: 0 auto;
+      line-height: 1.4;
+    }
+
+    .card {
+      background: white;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 1.5rem; /* Reduced padding */
+      margin-bottom: 1.5rem;
+    }
+
+    .dashboard {
+      display: flex;
+      flex-direction: column; /* Stack vertically */
+      gap: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .controls-panel {
+      background: var(--light-bg);
+      padding: 1.5rem;
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      width: 100%;
+    }
+
+    .metrics-summary {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); /* Adjusted for smaller width */
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+      width: 100%;
+    }
+
+    .metric-card {
+      background: white;
+      padding: 1rem;
+      border-radius: var(--radius);
+      border-left: 4px solid var(--secondary);
+      box-shadow: var(--shadow);
+    }
+
+    .metric-value {
+      font-size: 1.3rem; /* Slightly smaller */
+      font-weight: bold;
+      color: var(--primary);
+    }
+
+    .metric-label {
+      font-size: 0.85rem;
+      color: var(--text-light);
+      margin-top: 0.25rem;
+    }
+
+    .form-field {
+      margin-bottom: 1.2rem;
+    }
+
+    label {
+      display: block;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      color: var(--text);
+      font-size: 0.95rem;
+    }
+
+    input, select, button {
+      width: 100%;
+      padding: 0.7rem;
+      border: 2px solid var(--border);
+      border-radius: var(--radius);
+      font-size: 0.95rem;
+      transition: all 0.3s ease;
+    }
+
+    input:focus, select:focus {
+      outline: none;
+      border-color: var(--secondary);
+      box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+    }
+
+    button {
+      background: linear-gradient(135deg, var(--secondary), #2980b9);
+      color: white;
+      border: none;
+      font-weight: 600;
+      cursor: pointer;
+      margin-top: 0.5rem;
+    }
+
+    button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(52, 152, 219, 0.3);
+    }
+
+    button:disabled {
+      background: #bdc3c7;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+
+    .file-upload {
+      position: relative;
+      overflow: hidden;
+      display: inline-block;
+      width: 100%;
+    }
+
+    .file-upload input[type="file"] {
+      position: absolute;
+      left: 0;
+      top: 0;
+      opacity: 0;
+      width: 100%;
+      height: 100%;
+      cursor: pointer;
+    }
+
+    .file-upload-label {
+      display: block;
+      padding: 0.7rem;
+      background: var(--light-bg);
+      border: 2px dashed var(--border);
+      border-radius: var(--radius);
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-size: 0.95rem;
+    }
+
+    .file-upload-label:hover {
+      border-color: var(--secondary);
+      background: rgba(52, 152, 219, 0.05);
+    }
+
+    #charts-container {
+      display: flex;
+      flex-direction: column; /* Stack charts vertically */
+      gap: 1.5rem;
+      margin-top: 1.5rem;
+      width: 100%;
+    }
+
+    .chart-block {
+      background: white;
+      padding: 1.2rem;
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow);
+      width: 100%;
+    }
+
+    .chart-block h3 {
+      margin-bottom: 1rem;
+      color: var(--primary);
+      font-size: 1.1rem;
+    }
+
+    #chart, #errorChart {
+      width: 100% !important;
+      height: 350px; /* Slightly smaller height */
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+    }
+
+    .status {
+      margin-top: 1rem;
+      padding: 0.8rem;
+      border-radius: var(--radius);
+      background: var(--light-bg);
+      border: 1px solid var(--border);
+      font-size: 0.9rem;
+    }
+
+    .error {
+      color: var(--accent);
+      font-weight: 600;
+    }
+
+    .success {
+      color: var(--success);
+      font-weight: 600;
+    }
+
+    .data-preview {
+      margin-top: 1.2rem;
+      max-height: 180px;
+      overflow-y: auto;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      width: 100%;
+    }
+
+    .data-preview table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.85rem;
+    }
+
+    .data-preview th,
+    .data-preview td {
+      padding: 0.4rem;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .data-preview th {
+      background: var(--light-bg);
+      font-weight: 600;
+    }
+
+    .interpretation {
+      margin-top: 1rem;
+      padding: 0.8rem;
+      background: #e8f4fc;
+      border-radius: var(--radius);
+      border-left: 4px solid var(--secondary);
+      font-size: 0.9rem;
+    }
+
+    .interpretation h4 {
+      margin-bottom: 0.5rem;
+      color: var(--primary);
+      font-size: 0.95rem;
+    }
+
+    small {
+      font-size: 0.8rem;
+      color: var(--text-light);
+      display: block;
+      margin-top: 0.25rem;
+    }
+
+    @media (max-width: 768px) {
+      .container {
+        padding: 10px;
+      }
+      
+      .card {
+        padding: 1rem;
+      }
+      
+      header h1 {
+        font-size: 1.8rem;
+      }
+      
+      .metrics-summary {
+        grid-template-columns: 1fr;
+      }
+      
+      #chart, #errorChart {
+        height: 300px;
+      }
+    }
+
+    .loading {
+      opacity: 0.6;
+      pointer-events: none;
+    }
+
+    .progress-bar {
+      width: 100%;
+      height: 4px;
+      background: var(--border);
+      border-radius: 2px;
+      overflow: hidden;
+      margin-top: 0.5rem;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--secondary), var(--success));
+      width: 0%;
+      transition: width 0.3s ease;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <header>
+      <h1>Lead Sales Performance Analyzer</h1>
+      <p class="subtitle">Analyze EPL (Earnings Per Lead) and EPSL (Earnings Per Successful Lead) with confidence intervals and margin of error trends</p>
+    </header>
+
+    <div class="dashboard">
+      <div class="controls-panel">
+        <h3>Analysis Controls</h3>
+        
+        <div class="form-field">
+          <label for="csvfile">Upload Lead Data CSV</label>
+          <div class="file-upload">
+            <input id="csvfile" type="file" accept=".csv"/>
+            <div class="file-upload-label">
+              📁 Choose CSV File
+            </div>
+          </div>
+        </div>
+
+        <div class="form-field">
+          <label for="colSelect">Performance Metric</label>
+          <select id="colSelect" disabled>
+            <option value="">Upload CSV First</option>
+          </select>
+        </div>
+
+        <div class="form-field">
+          <label for="step">Sample Step Size</label>
+          <input id="step" type="number" value="10" min="1" max="100"/>
+          <small>How many samples to jump between calculations</small>
+        </div>
+
+        <div class="form-field">
+          <label for="conf">Confidence Level (%)</label>
+          <input id="conf" type="number" value="95" min="80" max="99.9" step="0.1"/>
+          <small>Higher = wider confidence intervals</small>
+        </div>
+
+        <button id="plotBtn" disabled>
+          📊 Generate Analysis
+        </button>
+
+        <div class="progress-bar" style="display: none;" id="progressBar">
+          <div class="progress-fill" id="progressFill"></div>
+        </div>
+      </div>
+
+      <div class="metrics-summary" id="metricsSummary" style="display: none;">
+        <div class="metric-card">
+          <div class="metric-value" id="currentMean">-</div>
+          <div class="metric-label">Current Mean</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-value" id="currentMoe">-</div>
+          <div class="metric-label">Margin of Error</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-value" id="sampleSize">-</div>
+          <div class="metric-label">Sample Size</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-value" id="confidenceLevel">-</div>
+          <div class="metric-label">Confidence Level</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <section id="charts-container">
+        <div class="chart-block">
+          <h3>💰 Performance Trend with Confidence Band</h3>
+          <div id="chart"></div>
+          <div class="interpretation">
+            <h4>📈 Interpretation</h4>
+            <p id="chartInterpretation">The chart shows how the average performance stabilizes as more data is collected. The shaded area represents the confidence interval - narrower bands indicate more precise estimates.</p>
+          </div>
+        </div>
+        <div class="chart-block">
+          <h3>📉 Margin of Error Trend</h3>
+          <div id="errorChart"></div>
+          <div class="interpretation">
+            <h4>🎯 Insights</h4>
+            <p id="errorInterpretation">Margin of error decreases as sample size increases. This shows how much additional data improves measurement precision for your lead performance metrics.</p>
+          </div>
+        </div>
+      </section>
+
+      <div class="data-preview" id="dataPreview" style="display: none;">
+        <h4>📋 Data Preview (First 10 rows)</h4>
+        <table id="previewTable">
+          <thead>
+            <tr>
+              <th>Row</th>
+              <th>Revenue</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+
+      <footer id="status" class="status">
+        Status: Ready to analyze lead performance data. Upload a CSV file containing revenue data to begin.
+      </footer>
+    </div>
+  </div>
+
+<script>
+
+const utils = {
+  safeLog: (...args) => { if (window.console) console.log(...args); },
+  
+  cleanNumberString: (s) => {
+    if (s === null || s === undefined) return NaN;
+    let str = String(s).trim();
+    if (str === '') return NaN;
+    
+    const isParenNeg = /^\(.*\)$/.test(str);
+    if (isParenNeg) str = '-' + str.replace(/^\(|\)$/g, '');
+    
+    str = str.replace(/[\s\$\?\\u00A0]/g, '');
+    str = str.replace(/,/g, '');
+    
+    const filtered = str.match(/[-+]?[\d]*\.?[\d]+([eE][-+]?\d+)?/);
+    if (!filtered) return NaN;
+    
+    const num = Number(filtered[0]);
+    return Number.isFinite(num) ? num : NaN;
+  },
+
+  mean: (arr) => arr.reduce((a, b) => a + b, 0) / arr.length,
+  
+  sampleStd: (arr) => {
+    if (arr.length <= 1) return 0;
+    const m = utils.mean(arr);
+    const s2 = arr.reduce((acc, v) => acc + (v - m) ** 2, 0) / (arr.length - 1);
+    return Math.sqrt(s2);
+  },
+
+  zFromConfidence: (conf) => {
+    const table = {
+      80: 1.282, 85: 1.44, 90: 1.645, 
+      95: 1.96, 98: 2.326, 99: 2.576, 99.9: 3.291
+    };
+    let best = 95;
+    let bestDiff = Infinity;
+    for (const key of Object.keys(table)) {
+      const k = Number(key);
+      const d = Math.abs(k - conf);
+      if (d < bestDiff) { bestDiff = d; best = k; }
+    }
+    return table[best];
+  },
+
+  formatCurrency: (value) => {
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD'
+    }).format(value);
+  }
+};
+
+
+const elements = {
+  csvInput: document.getElementById('csvfile'),
+  colSelect: document.getElementById('colSelect'),
+  plotBtn: document.getElementById('plotBtn'),
+  stepInput: document.getElementById('step'),
+  confInput: document.getElementById('conf'),
+  statusDiv: document.getElementById('status'),
+  progressBar: document.getElementById('progressBar'),
+  progressFill: document.getElementById('progressFill'),
+  metricsSummary: document.getElementById('metricsSummary'),
+  dataPreview: document.getElementById('dataPreview'),
+  previewTable: document.getElementById('previewTable'),
+  chartInterpretation: document.getElementById('chartInterpretation'),
+  errorInterpretation: document.getElementById('errorInterpretation')
+};
+
+let parsedRows = [];
+let plotlyAvailable = false;
+let currentAnalysis = null;
+
+function init() {
+  checkPlotlyLoad();
+  setupEventListeners();
+  updateStatus('Ready to analyze lead performance data.');
+}
+
+function checkPlotlyLoad() {
+  const scriptEl = document.getElementById('plotly-script');
+  if (!scriptEl) {
+    updateStatus('Error: Plotly script tag missing.', 'error');
+    return;
+  }
+
+  if (window.Plotly) {
+    plotlyAvailable = true;
+    updateStatus('Plotly loaded successfully.', 'success');
+    return;
+  }
+
+  scriptEl.addEventListener('load', () => {
+    if (window.Plotly) {
+      plotlyAvailable = true;
+      updateStatus('Plotly loaded successfully.', 'success');
+    } else {
+      plotlyAvailable = false;
+      updateStatus('Plotly failed to initialize.', 'error');
+    }
+  });
+
+  scriptEl.addEventListener('error', () => {
+    plotlyAvailable = false;
+    updateStatus('Failed to load Plotly. Check your connection.', 'error');
+  });
+}
+
+function setupEventListeners() {
+  elements.csvInput.addEventListener('change', handleFileUpload);
+  elements.plotBtn.addEventListener('click', generateAnalysis);
+}
+
+function handleFileUpload(ev) {
+  const file = ev.target.files && ev.target.files[0];
+  if (!file) return;
+
+  updateStatus('Parsing CSV file...');
+  showProgress(0);
+
+  Papa.parse(file, {
+    header: true,
+    skipEmptyLines: true,
+    transformHeader: h => (h || '').trim(),
+    complete: (res) => {
+      parsedRows = res.data || [];
+      showProgress(100);
+      
+      if (parsedRows.length === 0) {
+        updateStatus('No valid data found in CSV.', 'error');
+        return;
+      }
+
+      setupMetricSelection();
+      showDataPreview();
+      updateStatus(`Loaded ${parsedRows.length} records successfully.`, 'success');
+    },
+    error: (err) => {
+      updateStatus(`CSV parse error: ${String(err)}`, 'error');
+      showProgress(0);
+    }
+  });
+}
+
+function setupMetricSelection() {
+  elements.colSelect.innerHTML = '';
+  
+  const metrics = [
+    { value: 'EPL', text: 'EPL - Earnings Per Lead (includes zeros)' },
+    { value: 'EPSL', text: 'EPSL - Earnings Per Successful Lead (excludes zeros)' }
+  ];
+  
+  metrics.forEach(m => {
+    const opt = document.createElement('option');
+    opt.value = m.value;
+    opt.textContent = m.text;
+    elements.colSelect.appendChild(opt);
+  });
+  
+  elements.colSelect.disabled = false;
+  elements.plotBtn.disabled = false;
+}
+
+function showDataPreview() {
+  elements.dataPreview.style.display = 'block';
+  const tbody = elements.previewTable.querySelector('tbody');
+  tbody.innerHTML = '';
+  
+  const previewRows = parsedRows.slice(0, 10);
+  previewRows.forEach((row, index) => {
+    const tr = document.createElement('tr');
+    const revenue = utils.cleanNumberString(row.revenue);
+    
+    tr.innerHTML = `
+      <td>${index + 1}</td>
+      <td style="color: ${revenue > 0 ? '#27ae60' : '#e74c3c'}">
+        ${utils.formatCurrency(revenue)}
+      </td>
+      <td>${revenue > 0 ? '✅ Successful' : '❌ No Sale'}</td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+function generateAnalysis() {
+  if (!validateInputs()) return;
+
+  elements.plotBtn.classList.add('loading');
+  updateStatus('Generating analysis...');
+  showProgress(0);
+
+  let progress = 0;
+  const progressInterval = setInterval(() => {
+    progress += 10;
+    showProgress(progress);
+    if (progress >= 90) clearInterval(progressInterval);
+  }, 100);
+
+  setTimeout(() => {
+    try {
+      performAnalysis();
+      showProgress(100);
+      updateStatus('Analysis completed successfully!', 'success');
+    } catch (err) {
+      updateStatus(`Analysis error: ${err.message}`, 'error');
+      showProgress(0);
+    } finally {
+      elements.plotBtn.classList.remove('loading');
+      clearInterval(progressInterval);
+    }
+  }, 500);
+}
+
+function validateInputs() {
+  if (!plotlyAvailable) {
+    alert('Please wait for Plotly to load completely.');
+    return false;
+  }
+  if (parsedRows.length === 0) {
+    alert('Please upload a CSV file first.');
+    return false;
+  }
+  if (!elements.colSelect.value) {
+    alert('Please select a performance metric.');
+    return false;
+  }
+  return true;
+}
+
+function performAnalysis() {
+  const metric = elements.colSelect.value;
+  const step = Math.max(1, Math.floor(Number(elements.stepInput.value) || 10));
+  const conf = Math.max(80, Math.min(99.9, Number(elements.confInput.value) || 95));
+  const z = utils.zFromConfidence(conf);
+
+  const revenueVals = parsedRows.map(r => utils.cleanNumberString(r.revenue));
+  let values = [];
+
+  if (metric === 'EPL') {
+    values = revenueVals.map(v => Number.isNaN(v) ? 0 : v);
+  } else if (metric === 'EPSL') {
+    values = revenueVals.filter(v => !Number.isNaN(v) && v > 0);
+  }
+
+  if (values.length < 3) {
+    throw new Error('Not enough valid values for selected metric.');
+  }
+
+  const x = [], means = [], margins = [];
+  for (let i = step; i <= values.length; i += step) {
+    const subset = values.slice(0, i);
+    const m = utils.mean(subset);
+    const s = utils.sampleStd(subset);
+    const moe = z * s / Math.sqrt(i);
+    x.push(i);
+    means.push(m);
+    margins.push(moe);
+  }
+
+  currentAnalysis = { x, means, margins, metric, conf, values };
+  updateMetricsSummary();
+  createVisualizations();
+  updateInterpretations();
+}
+
+function updateMetricsSummary() {
+  const { means, margins, values, conf, metric } = currentAnalysis;
+  const currentMean = means[means.length - 1];
+  const currentMoe = margins[margins.length - 1];
+  
+  document.getElementById('currentMean').textContent = utils.formatCurrency(currentMean);
+  document.getElementById('currentMoe').textContent = utils.formatCurrency(currentMoe);
+  document.getElementById('sampleSize').textContent = values.length.toLocaleString();
+  document.getElementById('confidenceLevel').textContent = conf + '%';
+  
+  elements.metricsSummary.style.display = 'grid';
+}
+
+function createVisualizations() {
+  const { x, means, margins, metric, conf } = currentAnalysis;
+  
+  const hoverText = means.map((m, i) => 
+    `Samples: ${x[i]}<br>Mean: ${utils.formatCurrency(m)}<br>Margin: ${utils.formatCurrency(margins[i])}`
+  );
+
+  const hoverErrorText = margins.map((m, i) =>
+    `Samples: ${x[i]}<br>Margin: ${utils.formatCurrency(m)}<br>Relative: ${((m/means[i])*100).toFixed(1)}%`
+  );
+
+  const upper = means.map((m, i) => m + margins[i]);
+  const lower = means.map((m, i) => m - margins[i]);
+  const bandX = [...x, ...x.slice().reverse()];
+  const bandY = [...upper, ...lower.slice().reverse()];
+
+  const traceBand = {
+    x: bandX,
+    y: bandY,
+    type: 'scatter',
+    fill: 'toself',
+    fillcolor: 'rgba(52, 152, 219, 0.2)',
+    line: { width: 0 },
+    hoverinfo: 'skip',
+    name: `${conf}% Confidence Interval`
+  };
+
+  const traceMean = {
+    x: x,
+    y: means,
+    type: 'scatter',
+    mode: 'lines+markers',
+    name: `${metric} Mean`,
+    marker: { 
+      size: 6,
+      color: '#2c3e50'
+    },
+    line: { 
+      width: 3,
+      color: '#3498db'
+    },
+    text: hoverText,
+    hovertemplate: '<b>%{text}</b><extra></extra>'
+  };
+
+  const errorTrace = {
+    x: x,
+    y: margins,
+    mode: 'lines+markers',
+    name: 'Margin of Error',
+    marker: { 
+      size: 5,
+      color: '#e74c3c'
+    },
+    line: { 
+      width: 2,
+      color: '#e74c3c'
+    },
+    text: hoverErrorText,
+    hovertemplate: '<b>%{text}</b><extra></extra>'
+  };
+
+  const maxMargin = Math.max(...margins);
+  const marginStep = maxMargin <= 2 ? 0.5 : maxMargin <= 5 ? 1 : maxMargin <= 10 ? 2 : 5;
+  const marginTick0 = 0;
+  const marginDtick = marginStep;
+
+  const mainLayout = {
+    title: {
+      text: `${metric} Performance Trend`,
+      font: { size: 16, color: '#2c3e50' }
+    },
+    xaxis: { 
+      title: 'Sample Size',
+      gridcolor: '#f0f0f0'
+    },
+    yaxis: { 
+      title: 'Earnings ($)',
+      gridcolor: '#f0f0f0',
+      tickformat: '$,.0f'
+    },
+    margin: { l: 60, r: 30, t: 60, b: 60 },
+    paper_bgcolor: '#fff',
+    plot_bgcolor: '#fff',
+    hovermode: 'closest',
+    showlegend: true
+  };
+
+  const errorLayout = {
+    title: {
+      text: 'Margin of Error Trend',
+      font: { size: 16, color: '#2c3e50' }
+    },
+    xaxis: { 
+      title: 'Sample Size',
+      gridcolor: '#f0f0f0'
+    },
+    yaxis: { 
+      title: 'Margin of Error ($)',
+      gridcolor: '#f0f0f0',
+      tickformat: '$,.1f', 
+      tick0: marginTick0,
+      dtick: marginDtick,
+      range: [0, Math.ceil(maxMargin * 1.1)] 
+    },
+    margin: { l: 60, r: 30, t: 50, b: 60 },
+    paper_bgcolor: '#fff',
+    plot_bgcolor: '#fff',
+    hovermode: 'closest'
+  };
+
+  Plotly.newPlot('chart', [traceBand, traceMean], mainLayout, { 
+    responsive: true,
+    displayModeBar: true
+  });
+
+  Plotly.newPlot('errorChart', [errorTrace], errorLayout, { 
+    responsive: true,
+    displayModeBar: true
+  });
+}
+
+function updateInterpretations() {
+  const { means, margins, metric, values } = currentAnalysis;
+  const currentMean = means[means.length - 1];
+  const currentMoe = margins[margins.length - 1];
+  const relativeError = (currentMoe / currentMean) * 100;
+
+  let chartInterpretation = '';
+  let errorInterpretation = '';
+
+  if (metric === 'EPL') {
+    chartInterpretation = `Your average earnings per lead is ${utils.formatCurrency(currentMean)}. `;
+    errorInterpretation = `The margin of error is ${utils.formatCurrency(currentMoe)} (${relativeError.toFixed(1)}% of the mean). `;
+  } else {
+    chartInterpretation = `Your average earnings per successful lead is ${utils.formatCurrency(currentMean)}. `;
+    errorInterpretation = `The margin of error is ${utils.formatCurrency(currentMoe)} (${relativeError.toFixed(1)}% of the mean). `;
+  }
+
+  chartInterpretation += `The confidence band shows how precise this estimate is based on ${values.length} data points.`;
+  
+  if (relativeError < 5) {
+    errorInterpretation += 'This indicates high precision in your performance measurement.';
+  } else if (relativeError < 15) {
+    errorInterpretation += 'Moderate precision - consider collecting more data for better accuracy.';
+  } else {
+    errorInterpretation += 'Low precision - significant uncertainty in the estimate. More data needed.';
+  }
+
+  elements.chartInterpretation.textContent = chartInterpretation;
+  elements.errorInterpretation.textContent = errorInterpretation;
+}
+
+function updateStatus(message, type = 'info') {
+  elements.statusDiv.textContent = `Status: ${message}`;
+  elements.statusDiv.className = 'status';
+  if (type === 'error') {
+    elements.statusDiv.classList.add('error');
+  } else if (type === 'success') {
+    elements.statusDiv.classList.add('success');
+  }
+}
+
+function showProgress(percent) {
+  elements.progressBar.style.display = 'block';
+  elements.progressFill.style.width = percent + '%';
+}
+
+document.addEventListener('DOMContentLoaded', init);
+</script>
+</body>
+</html>

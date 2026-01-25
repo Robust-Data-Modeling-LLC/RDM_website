@@ -1,0 +1,1074 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Robust Data Modeling | Advanced Data Theory Solutions</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #1a5f7a;
+            --secondary: #57c5b6;
+            --dark: #002b36;
+            --light: #f8f9fa;
+            --gray: #6c757d;
+            --transition: all 0.3s ease;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f7fa;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        /* Authorization Modal */
+        .auth-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        .auth-modal.active {
+            display: flex;
+        }
+        
+        .auth-container {
+            background: white;
+            border-radius: 12px;
+            width: 100%;
+            max-width: 450px;
+            overflow: hidden;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            transform: translateY(0);
+            animation: slideUp 0.4s ease;
+        }
+        
+        .auth-header {
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            color: white;
+            padding: 1.5rem;
+            text-align: center;
+            position: relative;
+        }
+        
+        .auth-header h2 {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .auth-header p {
+            opacity: 0.9;
+            font-size: 0.9rem;
+        }
+        
+        .close-auth {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        
+        .close-auth:hover {
+            transform: rotate(90deg);
+        }
+        
+        .auth-body {
+            padding: 2rem;
+        }
+        
+        .auth-form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .auth-form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: var(--dark);
+        }
+        
+        .auth-form-group input {
+            width: 100%;
+            padding: 0.8rem 1rem;
+            border: 2px solid #e1e5e9;
+            border-radius: 6px;
+            font-size: 1rem;
+            transition: var(--transition);
+        }
+        
+        .auth-form-group input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(26, 95, 122, 0.1);
+        }
+        
+        .auth-form-group input.error {
+            border-color: #e74c3c;
+        }
+        
+        .auth-error {
+            color: #e74c3c;
+            font-size: 0.85rem;
+            margin-top: 0.3rem;
+            display: none;
+        }
+        
+        .auth-error.active {
+            display: block;
+        }
+        
+        .auth-checkbox {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .auth-checkbox input {
+            width: auto;
+        }
+        
+        .auth-checkbox label {
+            font-size: 0.9rem;
+            color: var(--gray);
+        }
+        
+        .auth-button {
+            width: 100%;
+            padding: 1rem;
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        
+        .auth-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(26, 95, 122, 0.3);
+        }
+        
+        .auth-button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .auth-footer {
+            text-align: center;
+            padding: 1rem 2rem;
+            background-color: #f8f9fa;
+            border-top: 1px solid #e1e5e9;
+            font-size: 0.9rem;
+            color: var(--gray);
+        }
+        
+        .auth-footer a {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 600;
+        }
+        
+        .auth-footer a:hover {
+            text-decoration: underline;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        /* Header & Navigation */
+        header {
+            background-color: var(--dark);
+            color: white;
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .logo-icon {
+            color: var(--secondary);
+            font-size: 1.8rem;
+        }
+        
+        .logo-text h1 {
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+        
+        .logo-text span {
+            color: var(--secondary);
+        }
+        
+        .logo-text p {
+            font-size: 0.8rem;
+            opacity: 0.8;
+        }
+        
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
+        
+        nav a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            transition: var(--transition);
+            padding: 0.5rem 0;
+            position: relative;
+        }
+        
+        nav a:hover {
+            color: var(--secondary);
+        }
+        
+        nav a.active {
+            color: var(--secondary);
+        }
+        
+        nav a.active::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background-color: var(--secondary);
+        }
+        
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+        
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(135deg, var(--dark) 0%, var(--primary) 100%);
+            color: white;
+            padding: 5rem 0;
+            text-align: center;
+        }
+        
+        .hero-content {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .hero h2 {
+            font-size: 2.8rem;
+            margin-bottom: 1rem;
+            line-height: 1.2;
+        }
+        
+        .hero p {
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .cta-button {
+            display: inline-block;
+            background-color: var(--secondary);
+            color: var(--dark);
+            padding: 0.9rem 2rem;
+            border-radius: 4px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1.1rem;
+            transition: var(--transition);
+            border: none;
+            cursor: pointer;
+        }
+        
+        .cta-button:hover {
+            background-color: #4ab3a7;
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        /* Main Content */
+        .main-content {
+            padding: 4rem 0;
+        }
+        
+        .section-title {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+        
+        .section-title h2 {
+            font-size: 2.2rem;
+            color: var(--dark);
+            margin-bottom: 0.5rem;
+        }
+        
+        .section-title p {
+            color: var(--gray);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        /* Documents Menu */
+        .documents-menu {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+        
+        .document-card {
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            transition: var(--transition);
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .document-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+        }
+        
+        .document-icon {
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            color: white;
+            padding: 1.5rem;
+            text-align: center;
+            font-size: 2.5rem;
+        }
+        
+        .document-content {
+            padding: 1.5rem;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .document-content h3 {
+            font-size: 1.3rem;
+            margin-bottom: 0.8rem;
+            color: var(--dark);
+        }
+        
+        .document-content p {
+            color: var(--gray);
+            margin-bottom: 1.5rem;
+            flex-grow: 1;
+        }
+        
+        .document-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 600;
+            transition: var(--transition);
+            cursor: pointer;
+        }
+        
+        .document-link:hover {
+            color: var(--secondary);
+            gap: 12px;
+        }
+        
+        /* Company Info */
+        .company-info {
+            background-color: var(--light);
+            padding: 4rem 0;
+            margin-top: 3rem;
+        }
+        
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+        }
+        
+        .info-card {
+            text-align: center;
+            padding: 2rem 1.5rem;
+        }
+        
+        .info-icon {
+            font-size: 2.5rem;
+            color: var(--primary);
+            margin-bottom: 1.5rem;
+        }
+        
+        .info-card h3 {
+            font-size: 1.3rem;
+            margin-bottom: 1rem;
+            color: var(--dark);
+        }
+        
+        /* Footer */
+        footer {
+            background-color: var(--dark);
+            color: white;
+            padding: 3rem 0 1.5rem;
+        }
+        
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .footer-column h3 {
+            font-size: 1.2rem;
+            margin-bottom: 1.5rem;
+            color: var(--secondary);
+        }
+        
+        .footer-links {
+            list-style: none;
+        }
+        
+        .footer-links li {
+            margin-bottom: 0.8rem;
+        }
+        
+        .footer-links a {
+            color: #ddd;
+            text-decoration: none;
+            transition: var(--transition);
+        }
+        
+        .footer-links a:hover {
+            color: var(--secondary);
+            padding-left: 5px;
+        }
+        
+        .copyright {
+            text-align: center;
+            padding-top: 1.5rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            color: #aaa;
+            font-size: 0.9rem;
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 992px) {
+            .hero h2 {
+                font-size: 2.3rem;
+            }
+            
+            nav ul {
+                gap: 1.5rem;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .mobile-menu-btn {
+                display: block;
+            }
+            
+            nav {
+                position: fixed;
+                top: 70px;
+                left: 0;
+                width: 100%;
+                background-color: var(--dark);
+                padding: 1rem;
+                transform: translateY(-100%);
+                opacity: 0;
+                visibility: hidden;
+                transition: var(--transition);
+                box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+            }
+            
+            nav.active {
+                transform: translateY(0);
+                opacity: 1;
+                visibility: visible;
+            }
+            
+            nav ul {
+                flex-direction: column;
+                gap: 0;
+            }
+            
+            nav li {
+                width: 100%;
+            }
+            
+            nav a {
+                display: block;
+                padding: 1rem;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            }
+            
+            nav a.active::after {
+                display: none;
+            }
+            
+            .hero {
+                padding: 3rem 0;
+            }
+            
+            .hero h2 {
+                font-size: 2rem;
+            }
+            
+            .hero p {
+                font-size: 1.1rem;
+            }
+            
+            .documents-menu {
+                grid-template-columns: 1fr;
+            }
+            
+            .auth-container {
+                width: 90%;
+                margin: 0 5%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Authorization Modal -->
+    <div class="auth-modal" id="authModal">
+        <div class="auth-container">
+            <div class="auth-header">
+                <button class="close-auth" id="closeAuth">
+                    <i class="fas fa-times"></i>
+                </button>
+                <h2>Authorization Required</h2>
+                <p>This document is restricted to authorized personnel only</p>
+            </div>
+            
+            <div class="auth-body">
+                <form id="authForm">
+                    <div class="auth-form-group">
+                        <label for="username">Username</label>
+                        <input type="text" id="username" placeholder="Enter your username" required>
+                        <div class="auth-error" id="usernameError">Username is required</div>
+                    </div>
+                    
+                    <div class="auth-form-group">
+                        <label for="password">Password</label>
+                        <input type="password" id="password" placeholder="Enter your password" required>
+                        <div class="auth-error" id="passwordError">Password is required</div>
+                    </div>
+                    
+                    <div class="auth-checkbox">
+                        <input type="checkbox" id="rememberMe">
+                        <label for="rememberMe">Remember me for 30 days</label>
+                    </div>
+                    
+                    <button type="submit" class="auth-button" id="authSubmit">
+                        <span>Authorize Access</span>
+                        <i class="fas fa-spinner fa-spin" style="display: none;"></i>
+                    </button>
+                </form>
+            </div>
+            
+            <div class="auth-footer">
+                <p>Need access? <a href="mailto:admin@robustdatamodeling.com">Contact Administrator</a></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Header & Navigation -->
+    <header>
+        <div class="container header-content">
+            <div class="logo">
+                <div class="logo-icon">
+                    <i class="fas fa-database"></i>
+                </div>
+                <div class="logo-text">
+                    <h1>Robust <span>Data Modeling</span></h1>
+                    <p>Advanced Theoretical Frameworks</p>
+                </div>
+            </div>
+            
+            <button class="mobile-menu-btn" id="mobileMenuBtn">
+                <i class="fas fa-bars"></i>
+            </button>
+            
+            <nav id="mainNav">
+                <ul>
+                    <li><a href="#" class="active">Home</a></li>
+                    <li><a href="#documents">Theoretical Documents</a></li>
+                    <li><a href="Tennis_theory/Stringing_math.html" target=_blank >Innovations & Inventions</a></li>
+                    <li><a href="#about">About</a></li>
+                    <li><a href="#contact">Contact</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container hero-content">
+            <h2>Advanced Data Modeling Theoretical Frameworks</h2>
+            <p>Pioneering research and development in robust data modeling techniques, statistical frameworks, and algorithmic innovations for complex data systems.</p>
+            <a href="#documents" class="cta-button">Explore Our Research</a>
+        </div>
+    </section>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="container">
+            <div class="section-title" id="documents">
+                <h2>Theoretical Developments</h2>
+                <p>Access our foundational research papers, theoretical frameworks, and methodological innovations that drive modern data modeling practices.</p>
+            </div>
+            
+            <!-- Documents Menu -->
+            <div class="documents-menu">
+                <!-- Document 1 -->
+                <div class="document-card">
+                    <div class="document-icon">
+                        <i class="fas fa-brain"></i>
+                    </div>
+                    <div class="document-content">
+                        <h3>A/B Test Model</h3>
+                        <p>Theoretical framework for self-adjusting predictive models that evolve with 		streaming data while maintaining consistency guarantees.</p>
+                        <a href="AB_test_analysis\ABindex.html" class="document-link" data-doc-id="ab-		test">
+                            <span>View Document</span>
+                            <i class="fas fa-arrow-right"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Document 2 -->
+                <div class="document-card">
+                    <div class="document-icon">
+                        <i class="fas fa-project-diagram"></i>
+                    </div>
+                    <div class="document-content">
+                        <h3>Sales Optimization System</h3>
+                        <p>This real-time widget computes the optimal lender price that maximizes expected profit per lead.</p>
+                        <a href="Sales/Sale_optimum.html" class="document-link" data-doc-id="sales-opt">
+                            <span>View Document</span>
+                            <i class="fas fa-arrow-right"></i>
+                        </a>
+                    </div>
+                </div>
+                
+                <!-- Document 3 -->
+                <div class="document-card">
+                    <div class="document-icon">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <div class="document-content">
+                        <h3>Lead Sales Performance Analyzer</h3>
+                        <p>A comprehensive framework for statistical modeling that ensures Analyzer EPL (Earnings Per Lead) and EPSL (Earnings Per Successful Lead) with confidence intervals and margin of error trends</p>
+                        <a href="Performance/Lead_performance.html" class="document-link" data-doc-id="lead-performance">
+                            <span>View Document</span>
+                            <i class="fas fa-arrow-right"></i>
+                        </a>
+                    </div>
+                </div>
+                
+                <!-- Document 4 -->
+                <div class="document-card">
+                    <div class="document-icon">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <div class="document-content">
+                        <h3>Privacy-Preserving Analytics</h3>
+                        <p>Mathematical foundations for data analysis techniques that guarantee differential privacy without sacrificing analytical precision.</p>
+                        <a href="AB_test_analysis/Docs information/Statistical Significance Explained for Leads Generation.docx" 
+                           class="document-link" data-doc-id="privacy-analytics">
+                            <span>View Document</span>
+                            <i class="fas fa-arrow-right"></i>
+                        </a>
+                    </div>
+                </div>
+                
+                <!-- Document 5 -->
+                <div class="document-card">
+                    <div class="document-icon">
+                        <i class="fas fa-bolt"></i>
+                    </div>
+                    <div class="document-content">
+                        <h3>Real-time Anomaly Detection</h3>
+                        <p>Algorithmic foundations for detecting and classifying anomalies in high-velocity data streams with minimal computational overhead.</p>
+                        <a href="#" class="document-link" data-doc-id="anomaly-detection">
+                            <span>View Document</span>
+                            <i class="fas fa-arrow-right"></i>
+                        </a>
+                    </div>
+                </div>
+            
+                <!-- Document 6 -->
+                <div class="document-card">
+                    <div class="document-icon">
+                        <i class="fas fa-cogs"></i>
+                    </div>
+                    <div class="document-content">
+                        <h3>AI in Leads Generation Business</h3>   	     
+                        <p>AI theoretical models for understanding the most affected variables by string tension in tennis physics.</p>
+                        <a href="#" class="document-link" data-doc-id="ai-leads">
+                            <span>View Document</span>
+                            <i class="fas fa-arrow-right"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Company Info -->
+            <div class="company-info" id="about">
+                <div class="section-title">
+                    <h2>Our Theoretical Approach</h2>
+                    <p>Robust Data Modeling specializes in developing foundational theories that transform how organizations understand and leverage their data assets.</p>
+                </div>
+                
+                <div class="info-grid">
+                    <div class="info-card">
+                        <div class="info-icon">
+                            <i class="fas fa-lightbulb"></i>
+                        </div>
+                        <h3>Innovative Research</h3>
+                        <p>We push the boundaries of data science with original theoretical work published in leading academic journals.</p>
+                    </div>
+                    
+                    <div class="info-card">
+                        <div class="info-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <h3>Collaborative Development</h3>
+                        <p>Our frameworks are developed in collaboration with industry partners and academic institutions worldwide.</p>
+                    </div>
+                    
+                    <div class="info-card">
+                        <div class="info-icon">
+                            <i class="fas fa-rocket"></i>
+                        </div>
+                        <h3>Practical Implementation</h3>
+                        <p>Every theoretical advancement is designed with practical application and real-world implementation in mind.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer id="contact">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-column">
+                    <h3>Robust Data Modeling</h3>
+                    <p>Advancing the theoretical foundations of data science through innovative research and collaborative development.</p>
+                </div>
+                
+                <div class="footer-column">
+                    <h3>Theoretical Documents</h3>
+                    <ul class="footer-links">
+                        <li><a href="#">Statistical Foundations</a></li>
+                        <li><a href="#">Data Structures</a></li>
+                        <li><a href="#">Learning Models</a></li>
+                        <li><a href="#">Privacy Analytics</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-column">
+                    <h3>Contact Us</h3>
+                    <ul class="footer-links">
+                        <li><i class="fas fa-map-marker-alt"></i> 123 Research Drive, Tech City</li>
+                        <li><i class="fas fa-phone"></i> (555) 123-4567</li>
+                        <li><i class="fas fa-envelope"></i> info@robustdatamodeling.com</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="copyright">
+                <p>&copy; 2023 Robust Data Modeling. All rights reserved. | Theoretical Research Division</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Mobile menu functionality
+        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+        const mainNav = document.getElementById('mainNav');
+        
+        mobileMenuBtn.addEventListener('click', function() {
+            mainNav.classList.toggle('active');
+            const icon = mobileMenuBtn.querySelector('i');
+            if (mainNav.classList.contains('active')) {
+                icon.classList.remove('fa-bars');
+                icon.classList.add('fa-times');
+            } else {
+                icon.classList.remove('fa-times');
+                icon.classList.add('fa-bars');
+            }
+        });
+        
+        // Close mobile menu when clicking on a link
+        const navLinks = document.querySelectorAll('nav a');
+        navLinks.forEach(link => {
+            link.addEventListener('click', function() {
+                if (mainNav.classList.contains('active')) {
+                    mainNav.classList.remove('active');
+                    const icon = mobileMenuBtn.querySelector('i');
+                    icon.classList.remove('fa-times');
+                    icon.classList.add('fa-bars');
+                }
+            });
+        });
+        
+        // Smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                const targetId = this.getAttribute('href');
+                if (targetId === '#') return;
+                
+                const targetElement = document.querySelector(targetId);
+                if (targetElement) {
+                    window.scrollTo({
+                        top: targetElement.offsetTop - 80,
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+
+        // Authorization Modal Logic
+        const authModal = document.getElementById('authModal');
+        const closeAuth = document.getElementById('closeAuth');
+        const authForm = document.getElementById('authForm');
+        const authSubmit = document.getElementById('authSubmit');
+        const usernameInput = document.getElementById('username');
+        const passwordInput = document.getElementById('password');
+        const usernameError = document.getElementById('usernameError');
+        const passwordError = document.getElementById('passwordError');
+        
+        // Store the original href to redirect after authorization
+        let targetDocumentUrl = '';
+        let targetDocId = '';
+
+        // Add click event listeners to all document links
+        document.querySelectorAll('.document-link').forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                // Check if href attribute exists
+                const href = this.getAttribute('href');
+                if (!href || href === '#') {
+                    alert('This document is currently unavailable.');
+                    return;
+                }
+                
+                // Store the target URL and document ID
+                targetDocumentUrl = href;
+                targetDocId = this.getAttribute('data-doc-id');
+                
+                // Show authorization modal
+                showAuthModal();
+            });
+        });
+
+        // Show authorization modal
+        function showAuthModal() {
+            authModal.classList.add('active');
+            document.body.style.overflow = 'hidden'; // Prevent scrolling
+            usernameInput.focus();
+        }
+
+        // Close authorization modal
+        function closeAuthModal() {
+            authModal.classList.remove('active');
+            document.body.style.overflow = 'auto'; // Re-enable scrolling
+            resetForm();
+        }
+
+        // Reset form
+        function resetForm() {
+            authForm.reset();
+            usernameError.classList.remove('active');
+            passwordError.classList.remove('active');
+            usernameInput.classList.remove('error');
+            passwordInput.classList.remove('error');
+        }
+
+        // Close modal when clicking X or outside modal
+        closeAuth.addEventListener('click', closeAuthModal);
+        authModal.addEventListener('click', function(e) {
+            if (e.target === authModal) {
+                closeAuthModal();
+            }
+        });
+
+        // Form validation
+        function validateForm() {
+            let isValid = true;
+            
+            // Reset errors
+            usernameError.classList.remove('active');
+            passwordError.classList.remove('active');
+            usernameInput.classList.remove('error');
+            passwordInput.classList.remove('error');
+            
+            // Validate username
+            if (!usernameInput.value.trim()) {
+                usernameError.textContent = 'Username is required';
+                usernameError.classList.add('active');
+                usernameInput.classList.add('error');
+                isValid = false;
+            }
+            
+            // Validate password
+            if (!passwordInput.value.trim()) {
+                passwordError.textContent = 'Password is required';
+                passwordError.classList.add('active');
+                passwordInput.classList.add('error');
+                isValid = false;
+            } else if (passwordInput.value.length < 6) {
+                passwordError.textContent = 'Password must be at least 6 characters';
+                passwordError.classList.add('active');
+                passwordInput.classList.add('error');
+                isValid = false;
+            }
+            
+            return isValid;
+        }
+
+        // Form submission
+        authForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            if (!validateForm()) return;
+            
+            // Show loading state
+            const submitText = authSubmit.querySelector('span');
+            const spinner = authSubmit.querySelector('.fa-spinner');
+            submitText.textContent = 'Authorizing...';
+            spinner.style.display = 'inline-block';
+            authSubmit.disabled = true;
+            
+            // Simulate API call (replace with real authentication)
+            setTimeout(() => {
+                // Default credentials for demo (replace with real authentication)
+                const validUsername = 'admin';
+                const validPassword = 'user123';
+                
+                if (usernameInput.value === validUsername && passwordInput.value === validPassword) {
+                    // Successful authentication
+                    alert(`Access granted to document: ${targetDocId}`);
+                    
+                    // Close modal
+                    closeAuthModal();
+                    
+                    // Redirect to the target document
+                    if (targetDocumentUrl) {
+                        window.open(targetDocumentUrl, '_blank');
+                    }
+                } else {
+                    // Failed authentication
+                    alert('Invalid username or password. Please try again.');
+                    
+                    // Highlight errors
+                    usernameInput.classList.add('error');
+                    passwordInput.classList.add('error');
+                }
+                
+                // Reset button state
+                submitText.textContent = 'Authorize Access';
+                spinner.style.display = 'none';
+                authSubmit.disabled = false;
+            }, 1500);
+        });
+
+        // Check for saved credentials
+        window.addEventListener('DOMContentLoaded', () => {
+            const savedUsername = localStorage.getItem('rdm_username');
+            const savedPassword = localStorage.getItem('rdm_password');
+            const rememberMe = localStorage.getItem('rdm_remember');
+            
+            if (rememberMe === 'true' && savedUsername && savedPassword) {
+                usernameInput.value = savedUsername;
+                passwordInput.value = atob(savedPassword); // Decode base64
+                document.getElementById('rememberMe').checked = true;
+            }
+        });
+
+        // Save credentials if "Remember me" is checked
+        document.getElementById('rememberMe').addEventListener('change', function(e) {
+            if (e.target.checked && usernameInput.value && passwordInput.value) {
+                localStorage.setItem('rdm_username', usernameInput.value);
+                localStorage.setItem('rdm_password', btoa(passwordInput.value)); // Encode to base64
+                localStorage.setItem('rdm_remember', 'true');
+            } else {
+                localStorage.removeItem('rdm_username');
+                localStorage.removeItem('rdm_password');
+                localStorage.removeItem('rdm_remember');
+            }
+        });
+    </script>
+</body>
+</html>

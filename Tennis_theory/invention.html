@@ -1,0 +1,1307 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Harmonic Tension System | Resonance-Based Racket Stringing</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Open+Sans:wght@300;400;600&display=swap">
+    <style>
+        :root {
+            --primary: #1a237e;
+            --secondary: #3949ab;
+            --accent: #5c6bc0;
+            --highlight: #8e99f3;
+            --dark: #0d1440;
+            --light: #f5f7ff;
+            --gray: #6c757d;
+            --success: #4caf50;
+            --transition: all 0.3s ease;
+            --shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            --shadow-heavy: 0 10px 30px rgba(0, 0, 0, 0.15);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Open Sans', sans-serif;
+            color: #333;
+            line-height: 1.7;
+            background-color: #f9fafc;
+        }
+        
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            color: var(--dark);
+            margin-bottom: 1rem;
+            line-height: 1.3;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        /* Header & Navigation */
+        header {
+            background: linear-gradient(135deg, var(--dark) 0%, var(--primary) 100%);
+            color: white;
+            padding: 1.2rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .logo-icon {
+            color: var(--highlight);
+            font-size: 2.2rem;
+        }
+        
+        .logo-text h1 {
+            font-size: 1.6rem;
+            color: white;
+            margin-bottom: 0;
+        }
+        
+        .logo-text span {
+            color: var(--highlight);
+            font-weight: 600;
+        }
+        
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
+        
+        nav a {
+            color: white;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: var(--transition);
+            padding: 0.5rem 0;
+            position: relative;
+        }
+        
+        nav a:hover {
+            color: var(--highlight);
+        }
+        
+        nav a.active {
+            color: var(--highlight);
+        }
+        
+        nav a.active::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background-color: var(--highlight);
+        }
+        
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+        
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(rgba(13, 20, 64, 0.85), rgba(26, 35, 126, 0.9)), 
+                        url('https://images.unsplash.com/photo-1595435934247-5d33b7f92c70?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80');
+            background-size: cover;
+            background-position: center;
+            color: white;
+            padding: 6rem 0;
+            text-align: center;
+        }
+        
+        .hero-content {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        
+        .hero h2 {
+            font-size: 3.2rem;
+            margin-bottom: 1.5rem;
+            color: white;
+            line-height: 1.2;
+        }
+        
+        .hero p {
+            font-size: 1.3rem;
+            margin-bottom: 2.5rem;
+            opacity: 0.95;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .hero-badge {
+            display: inline-block;
+            background-color: var(--highlight);
+            color: var(--dark);
+            padding: 0.5rem 1.5rem;
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 1.1rem;
+            margin-bottom: 2rem;
+            letter-spacing: 0.5px;
+        }
+        
+        .cta-button {
+            display: inline-block;
+            background-color: var(--highlight);
+            color: var(--dark);
+            padding: 1.1rem 2.8rem;
+            border-radius: 4px;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 1.1rem;
+            transition: var(--transition);
+            border: none;
+            cursor: pointer;
+            box-shadow: var(--shadow);
+            letter-spacing: 0.5px;
+        }
+        
+        .cta-button:hover {
+            background-color: white;
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-heavy);
+        }
+        
+        /* Main Content */
+        .main-content {
+            padding: 5rem 0;
+        }
+        
+        .section {
+            margin-bottom: 6rem;
+        }
+        
+        .section-title {
+            text-align: center;
+            margin-bottom: 3.5rem;
+            position: relative;
+        }
+        
+        .section-title h2 {
+            font-size: 2.5rem;
+            position: relative;
+            display: inline-block;
+            padding-bottom: 1rem;
+        }
+        
+        .section-title h2::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 4px;
+            background-color: var(--accent);
+            border-radius: 2px;
+        }
+        
+        .section-title p {
+            color: var(--gray);
+            max-width: 700px;
+            margin: 1.5rem auto 0;
+            font-size: 1.1rem;
+        }
+        
+        /* Video Demonstration Section */
+        .video-demonstration {
+            background-color: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: var(--shadow-heavy);
+            margin: 4rem 0;
+            padding: 0;
+        }
+        
+        .video-header {
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            color: white;
+            padding: 2rem;
+            text-align: center;
+        }
+        
+        .video-header h3 {
+            color: white;
+            font-size: 1.8rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .video-header p {
+            opacity: 0.9;
+            font-size: 1.1rem;
+        }
+        
+        .video-container {
+            position: relative;
+            width: 100%;
+            padding-bottom: 56.25%; /* 16:9 Aspect Ratio */
+            height: 0;
+            overflow: hidden;
+        }
+        
+        .video-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+        
+        .video-fallback {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, var(--dark) 0%, var(--primary) 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            text-align: center;
+            padding: 2rem;
+        }
+        
+        .video-fallback i {
+            font-size: 4rem;
+            margin-bottom: 1.5rem;
+            color: var(--highlight);
+        }
+        
+        .video-fallback h4 {
+            color: white;
+            margin-bottom: 1rem;
+            font-size: 1.5rem;
+        }
+        
+        .video-fallback a {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background-color: var(--highlight);
+            color: var(--dark);
+            padding: 0.8rem 1.5rem;
+            border-radius: 4px;
+            text-decoration: none;
+            font-weight: 600;
+            margin-top: 1rem;
+            transition: var(--transition);
+        }
+        
+        .video-fallback a:hover {
+            background-color: white;
+            transform: translateY(-3px);
+        }
+        
+        .video-caption {
+            padding: 2rem;
+            background-color: var(--light);
+            border-top: 3px solid var(--accent);
+        }
+        
+        .video-caption h4 {
+            color: var(--primary);
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .video-caption h4 i {
+            color: var(--accent);
+        }
+        
+        /* Innovation Section */
+        .innovation-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2.5rem;
+            margin-top: 3rem;
+        }
+        
+        .innovation-card {
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+            height: 100%;
+        }
+        
+        .innovation-card:hover {
+            transform: translateY(-10px);
+            box-shadow: var(--shadow-heavy);
+        }
+        
+        .innovation-icon {
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            color: white;
+            padding: 2rem;
+            text-align: center;
+            font-size: 3rem;
+        }
+        
+        .innovation-content {
+            padding: 2rem;
+        }
+        
+        .innovation-content h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: var(--primary);
+        }
+        
+        /* Methodology Section */
+        .methodology {
+            background-color: var(--light);
+            padding: 5rem 0;
+            margin: 5rem 0;
+        }
+        
+        .method-steps {
+            display: flex;
+            flex-direction: column;
+            gap: 2.5rem;
+            max-width: 800px;
+            margin: 3rem auto 0;
+        }
+        
+        .method-step {
+            display: flex;
+            align-items: flex-start;
+            gap: 2rem;
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: var(--shadow);
+        }
+        
+        .step-number {
+            background: var(--primary);
+            color: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+        
+        .step-content h3 {
+            font-size: 1.4rem;
+            margin-bottom: 0.8rem;
+            color: var(--primary);
+        }
+        
+        /* Comparison Table */
+        .comparison-table {
+            overflow-x: auto;
+            margin-top: 3rem;
+            border-radius: 10px;
+            box-shadow: var(--shadow);
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+        }
+        
+        th, td {
+            padding: 1.5rem;
+            text-align: left;
+            border-bottom: 1px solid #eaeaea;
+        }
+        
+        th {
+            background-color: var(--primary);
+            color: white;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        tr:nth-child(even) {
+            background-color: var(--light);
+        }
+        
+        .check {
+            color: var(--success);
+            font-weight: bold;
+        }
+        
+        .cross {
+            color: #f44336;
+            font-weight: bold;
+        }
+        
+        /* Mathematical Foundation */
+        .formula-container {
+            background: white;
+            padding: 3rem;
+            border-radius: 10px;
+            box-shadow: var(--shadow);
+            margin-top: 3rem;
+        }
+        
+        .formula {
+            font-family: 'Courier New', monospace;
+            font-size: 1.4rem;
+            background-color: var(--light);
+            padding: 1.5rem;
+            border-radius: 8px;
+            text-align: center;
+            margin: 2rem 0;
+            border-left: 4px solid var(--accent);
+        }
+        
+        .formula-variables {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+        
+        .variable {
+            padding: 1.5rem;
+            background: var(--light);
+            border-radius: 8px;
+        }
+        
+        .variable h4 {
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+        
+        /* Patent Section */
+        .patent-section {
+            background: linear-gradient(135deg, var(--dark) 0%, var(--primary) 100%);
+            color: white;
+            padding: 5rem 0;
+            margin: 5rem 0;
+        }
+        
+        .patent-content {
+            max-width: 900px;
+            margin: 0 auto;
+            text-align: center;
+        }
+        
+        .patent-content h2 {
+            color: white;
+        }
+        
+        .patent-content p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            margin-bottom: 2.5rem;
+        }
+        
+        .patent-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 1rem 2rem;
+            border-radius: 50px;
+            margin-top: 2rem;
+            border: 2px solid var(--highlight);
+        }
+        
+        /* Documents Section */
+        .documents-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 2.5rem;
+            margin-top: 3rem;
+        }
+        
+        .document-card {
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+            height: 100%;
+        }
+        
+        .document-card:hover {
+            transform: translateY(-10px);
+            box-shadow: var(--shadow-heavy);
+        }
+        
+        .document-header {
+            background: linear-gradient(to right, var(--secondary), var(--accent));
+            color: white;
+            padding: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .document-icon {
+            font-size: 2rem;
+        }
+        
+        .document-body {
+            padding: 2rem;
+        }
+        
+        .document-body h3 {
+            font-size: 1.4rem;
+            margin-bottom: 1rem;
+            color: var(--primary);
+        }
+        
+        .document-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 600;
+            transition: var(--transition);
+            margin-top: 1.5rem;
+        }
+        
+        .document-link:hover {
+            color: var(--accent);
+            gap: 12px;
+        }
+        
+        /* Footer */
+        footer {
+            background-color: var(--dark);
+            color: white;
+            padding: 4rem 0 2rem;
+        }
+        
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 3rem;
+            margin-bottom: 3rem;
+        }
+        
+        .footer-column h3 {
+            font-size: 1.3rem;
+            margin-bottom: 1.8rem;
+            color: var(--highlight);
+        }
+        
+        .footer-links {
+            list-style: none;
+        }
+        
+        .footer-links li {
+            margin-bottom: 0.8rem;
+        }
+        
+        .footer-links a {
+            color: #ddd;
+            text-decoration: none;
+            transition: var(--transition);
+        }
+        
+        .footer-links a:hover {
+            color: var(--highlight);
+            padding-left: 5px;
+        }
+        
+        .contact-info {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        
+        .contact-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .copyright {
+            text-align: center;
+            padding-top: 2rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            color: #aaa;
+            font-size: 0.9rem;
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 992px) {
+            .hero h2 {
+                font-size: 2.7rem;
+            }
+            
+            .section-title h2 {
+                font-size: 2.2rem;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .mobile-menu-btn {
+                display: block;
+            }
+            
+            nav {
+                position: fixed;
+                top: 80px;
+                left: 0;
+                width: 100%;
+                background-color: var(--dark);
+                padding: 1.5rem;
+                transform: translateY(-100%);
+                opacity: 0;
+                visibility: hidden;
+                transition: var(--transition);
+                box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+            }
+            
+            nav.active {
+                transform: translateY(0);
+                opacity: 1;
+                visibility: visible;
+            }
+            
+            nav ul {
+                flex-direction: column;
+                gap: 0;
+            }
+            
+            nav li {
+                width: 100%;
+            }
+            
+            nav a {
+                display: block;
+                padding: 1rem;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            }
+            
+            nav a.active::after {
+                display: none;
+            }
+            
+            .hero {
+                padding: 4rem 0;
+            }
+            
+            .hero h2 {
+                font-size: 2.3rem;
+            }
+            
+            .hero p {
+                font-size: 1.1rem;
+            }
+            
+            .method-step {
+                flex-direction: column;
+                gap: 1.5rem;
+            }
+            
+            .formula-container {
+                padding: 2rem;
+            }
+            
+            .video-header {
+                padding: 1.5rem;
+            }
+            
+            .video-header h3 {
+                font-size: 1.5rem;
+            }
+            
+            .video-caption {
+                padding: 1.5rem;
+            }
+            
+            .video-fallback i {
+                font-size: 3rem;
+            }
+            
+            .video-fallback h4 {
+                font-size: 1.3rem;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .hero h2 {
+                font-size: 2rem;
+            }
+            
+            .section-title h2 {
+                font-size: 1.8rem;
+            }
+            
+            .innovation-grid, .documents-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header & Navigation -->
+    <header>
+        <div class="container header-content">
+            <div class="logo">
+                <div class="logo-icon">
+                    <i class="fas fa-wave-square"></i>
+                </div>
+                <div class="logo-text">
+                    <h1>Harmonic <span>Tension System</span></h1>
+                </div>
+            </div>
+            
+            <button class="mobile-menu-btn" id="mobileMenuBtn">
+                <i class="fas fa-bars"></i>
+            </button>
+            
+            <nav id="mainNav">
+                <ul>
+                    <li><a href="#innovation" class="active">Innovation</a></li>
+                    <li><a href="#methodology">Methodology</a></li>
+                    <li><a href="#demonstration">Video Demo</a></li>
+                    <li><a href="#mathematics">Mathematics</a></li>
+                    <li><a href="#documents">Documents</a></li>
+                    <li><a href="#patent">Patent</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container hero-content">
+            <div class="hero-badge">
+                <i class="fas fa-certificate"></i> Patent-Pending Technology
+            </div>
+            <h2>Resonance-Based Proportional Stringing</h2>
+            <p>A revolutionary approach to tennis racket customization that replaces complex calculations with acoustic resonance principles, ensuring uniform string bed compliance through frequency matching.</p>
+            <a href="#demonstration" class="cta-button">Watch Video Demonstration</a>
+        </div>
+    </section>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="container">
+            <!-- Innovation Section -->
+            <section class="section" id="innovation">
+                <div class="section-title">
+                    <h2>The Innovation</h2>
+                    <p>Harmonic Tension System transforms proportional stringing from mathematical computation to acoustic resonance, simplifying the process while improving consistency.</p>
+                </div>
+                
+                <div class="innovation-grid">
+                    <div class="innovation-card">
+                        <div class="innovation-icon">
+                            <i class="fas fa-calculator"></i>
+                        </div>
+                        <div class="innovation-content">
+                            <h3>Mathematical Foundation</h3>
+                            <p>Based on principles from "Static Equilibrium" and "Dynamic Model" studies, confirming alignment with established mathematical frameworks including Invention No. 19490528.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="innovation-card">
+                        <div class="innovation-icon">
+                            <i class="fas fa-waveform"></i>
+                        </div>
+                        <div class="innovation-content">
+                            <h3>Frequency Discovery</h3>
+                            <p>Key discovery: strings tensioned via static calculation exhibit identical vibration frequencies, enabling resonance-based tensioning rather than calculation-based approaches.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="innovation-card">
+                        <div class="innovation-icon">
+                            <i class="fas fa-sliders-h"></i>
+                        </div>
+                        <div class="innovation-content">
+                            <h3>Simplified Process</h3>
+                            <p>Eliminates repetitive mathematical computations while guaranteeing uniform string bed response—a significant simplification of proportional tensioning methodology.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Video Demonstration Section -->
+            <section class="section" id="demonstration">
+                <div class="section-title">
+                    <h2>Video Demonstration</h2>
+                    <p>Watch the Harmonic Tension System in action - a practical demonstration of resonance-based proportional stringing.</p>
+                </div>
+                
+                <div class="video-demonstration">
+                    <div class="video-header">
+                        <h3>Live Resonance Tensioning Demonstration</h3>
+                        <p>Observe how acoustic frequency matching replaces complex calculations</p>
+                    </div>
+                    
+                    <div class="video-container">
+                        <!-- YouTube Embed with fallback -->
+                        <iframe 
+                            src="https://www.youtube.com/embed/6FgmC50EFb0?rel=0&modestbranding=1&autoplay=0" 
+                            title="Harmonic Tension System Demonstration" 
+                            frameborder="0" 
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+                            referrerpolicy="strict-origin-when-cross-origin"
+                            allowfullscreen>
+                        </iframe>
+                        
+                        <!-- Fallback content in case video doesn't load -->
+                        <div class="video-fallback" id="videoFallback" style="display: none;">
+                            <i class="fas fa-video-slash"></i>
+                            <h4>Video Player Unavailable</h4>
+                            <p>The video player encountered a configuration error. You can watch the demonstration directly on YouTube.</p>
+                            <a href="https://youtu.be/6FgmC50EFb0?si=6nyryeI6awlItlmX" target="_blank" rel="noopener noreferrer">
+                                <i class="fab fa-youtube"></i>
+                                <span>Watch on YouTube</span>
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <div class="video-caption">
+                        <h4><i class="fas fa-play-circle"></i> Key Demonstration Points:</h4>
+                        <p>This video demonstrates the core principle of the Harmonic Tension System: achieving proportional string tension through acoustic resonance rather than mathematical calculation. Observe how:</p>
+                        <ul style="margin-top: 1rem; padding-left: 1.5rem;">
+                            <li>The reference string establishes the baseline frequency</li>
+                            <li>Subsequent strings are adjusted to match this frequency</li>
+                            <li>Resonance indicates identical tension-to-length ratios</li>
+                            <li>The process eliminates complex calculations entirely</li>
+                            <li>Uniform string bed compliance is achieved through acoustic matching</li>
+                        </ul>
+                        <p style="margin-top: 1rem; font-style: italic; color: var(--primary);">
+                            <i class="fas fa-link"></i> Direct Link: 
+                            <a href="https://youtu.be/6FgmC50EFb0?si=6nyryeI6awlItlmX" target="_blank" style="color: var(--accent); text-decoration: none;">
+                                https://youtu.be/6FgmC50EFb0
+                            </a>
+                        </p>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Methodology Section -->
+            <section class="methodology" id="methodology">
+                <div class="container">
+                    <div class="section-title">
+                        <h2>Four-Step Methodology</h2>
+                        <p>The resonance-based technique operates through a simple, repeatable process accessible to all stringing professionals.</p>
+                    </div>
+                    
+                    <div class="method-steps">
+                        <div class="method-step">
+                            <div class="step-number">1</div>
+                            <div class="step-content">
+                                <h3>Establish Reference</h3>
+                                <p>Select and tension the central main string to a predetermined reference value using standard stringing equipment. This becomes the acoustic baseline for the entire string bed.</p>
+                            </div>
+                        </div>
+                        
+                        <div class="method-step">
+                            <div class="step-number">2</div>
+                            <div class="step-content">
+                                <h3>Excite & Compare</h3>
+                                <p>Simultaneously excite vibrations in both the reference string and the current string being tensioned. Use a specialized acoustic sensor or tuning app to monitor frequencies.</p>
+                            </div>
+                        </div>
+                        
+                        <div class="method-step">
+                            <div class="step-number">3</div>
+                            <div class="step-content">
+                                <h3>Adjust to Resonance</h3>
+                                <p>Gradually adjust the tension of the current string until its vibration frequency matches (resonates with) the reference string frequency. This indicates proportional tension alignment.</p>
+                            </div>
+                        </div>
+                        
+                        <div class="method-step">
+                            <div class="step-number">4</div>
+                            <div class="step-content">
+                                <h3>Systematic Completion</h3>
+                                <p>Repeat the process for each subsequent string in a systematic pattern, moving outward from the center. Each string resonates with the established reference, creating uniform compliance.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Comparison Section -->
+            <section class="section" id="comparison">
+                <div class="section-title">
+                    <h2>Traditional vs. Resonance Method</h2>
+                    <p>A clear comparison demonstrating the advantages of the Harmonic Tension System over conventional proportional stringing approaches.</p>
+                </div>
+                
+                <div class="comparison-table">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Feature</th>
+                                <th>Traditional Proportional</th>
+                                <th>Harmonic Tension System</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Calculation Required</strong></td>
+                                <td><span class="cross">Extensive</span> - Each string needs individual calculation</td>
+                                <td><span class="check">NO</span> - No need to calculate the string tension</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Equipment Complexity</strong></td>
+                                <td><span class="cross">High</span> - Computerized tension tables needed</td>
+                                <td><span class="check">Low</span> - Standard machine + acoustic sensor</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Time Required</strong></td>
+                                <td><span class="cross">30-40 minutes</span> - Due to calculations</td>
+                                <td><span class="check">15-20 minutes</span> - Streamlined process</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Consistency</strong></td>
+                                <td><span class="cross">Variable</span> - Depends on calculation accuracy</td>
+                                <td><span class="check">High</span> - Based on measurable resonance</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Training Required</strong></td>
+                                <td><span class="cross">Advanced</span> - Mathematical understanding needed</td>
+                                <td><span class="check">Basic</span> - Simple acoustic matching</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Error Margin</strong></td>
+                                <td><span class="cross">± 2-3 lbs</span> - Cumulative calculation errors</td>
+                                <td><span class="check">± 0.5 lbs</span> - Precise frequency matching</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+            
+            <!-- Mathematical Foundation -->
+            <section class="section" id="mathematics">
+                <div class="section-title">
+                    <h2>Mathematical Foundation</h2>
+                    <p>The scientific principles underlying the resonance-based proportional stringing methodology.</p>
+                </div>
+                
+                <div class="formula-container">
+                    <h3>Core Formula: Static Equilibrium</h3>
+                    <p>The analysis of static equilibrium principles yields a straightforward formula where string tension correlates directly with length to achieve uniform compliance:</p>
+                    
+                    <div class="formula">
+                        T<sub>i</sub> = T<sub>0</sub> × (L<sub>i</sub> / L<sub>0</sub>)
+                    </div>
+                    
+                    <p>This maintains a constant tension-to-length ratio throughout the stringing process, consistent with established mathematical models.</p>
+                    
+                    <h3 style="margin-top: 3rem;">Dynamic Behavior Formula</h3>
+                    <p>String vibration frequency depends on the tension-to-length ratio, as described by the dynamic model:</p>
+                    
+                    <div class="formula">
+                        f ∝ √(T / L)
+                    </div>
+                    
+                    <p>Where identical frequency indicates identical T/L ratio, confirming proportional tension without direct calculation.</p>
+                    
+                    <div class="formula-variables">
+                        <div class="variable">
+                            <h4>T<sub>i</sub></h4>
+                            <p>Tension of individual string (lbs or kg)</p>
+                        </div>
+                        <div class="variable">
+                            <h4>T<sub>0</sub></h4>
+                            <p>Reference/base tension (lbs or kg)</p>
+                        </div>
+                        <div class="variable">
+                            <h4>L<sub>i</sub></h4>
+                            <p>Length of individual string (inches or cm)</p>
+                        </div>
+                        <div class="variable">
+                            <h4>L<sub>0</sub></h4>
+                            <p>Length of reference string (inches or cm)</p>
+                        </div>
+                        <div class="variable">
+                            <h4>f</h4>
+                            <p>Vibration frequency (Hz)</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Patent Section -->
+            <section class="patent-section" id="patent">
+                <div class="patent-content">
+                    <h2>Patent Application In Progress</h2>
+                    <p>The Harmonic Tension System represents a patentable advancement in racket customization technology. Our method of using acoustic resonance to achieve proportional stringing without complex calculations is currently undergoing patent review.</p>
+                    
+                    <div class="patent-badge">
+                        <i class="fas fa-file-contract"></i>
+                        <span>Application No: HT-2024-0017 | Status: Under Examination</span>
+                    </div>
+                    
+                    <p style="margin-top: 2rem; font-size: 1rem; opacity: 0.8;">Based on mathematical principles from "Static Equilibrium" and "Dynamic Model" studies, confirming alignment with established frameworks including Invention No. 19490528.</p>
+                </div>
+            </section>
+            
+            <!-- Documents Section -->
+            <section class="section" id="documents">
+                <div class="section-title">
+                    <h2>Technical Documentation</h2>
+                    <p>Comprehensive research papers and technical specifications supporting the Harmonic Tension System.</p>
+                </div>
+                
+                <div class="documents-grid">
+                    <div class="document-card">
+                        <div class="document-header">
+                            <div class="document-icon">
+                                <i class="fas fa-balance-scale"></i>
+                            </div>
+                            <div>
+                                <h3>Static Equilibrium Analysis</h3>
+                                <p>Mathematical Foundations</p>
+                            </div>
+                        </div>
+                        <div class="document-body">
+                            <p>Detailed analysis of static equilibrium principles in string tensioning, confirming alignment with established mathematical models and Invention No. 19490528.</p>
+                            <a href="String_deformation.html" class="document-link">
+                                <span>Download PDF</span>
+                                <i class="fas fa-arrow-down"></i>
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <div class="document-card">
+                        <div class="document-header">
+                            <div class="document-icon">
+                                <i class="fas fa-waveform"></i>
+                            </div>
+                            <div>
+                                <h3>Dynamic Model Study</h3>
+                                <p>Vibration Frequency Analysis</p>
+                            </div>
+                        </div>
+                        <div class="document-body">
+                            <p>Comprehensive study of string vibration dynamics and the relationship between tension-to-length ratios and acoustic frequency.</p>
+                            <a href="free_vibration.html" class="document-link">
+                                <span>Download PDF</span>
+                                <i class="fas fa-arrow-down"></i>
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <div class="document-card">
+                        <div class="document-header">
+                            <div class="document-icon">
+                                <i class="fas fa-microscope"></i>
+                            </div>
+                            <div>
+                                <h3>Experimental Results</h3>
+                                <p>Practical Testing Data</p>
+                            </div>
+                        </div>
+                        <div class="document-body">
+                            <p>Laboratory and field testing results demonstrating the effectiveness and consistency of the resonance-based method across multiple racket types.</p>
+                            <a href="US PATENT 5.docx" class="document-link">
+                                <span>Download PDF</span>
+                                <i class="fas fa-arrow-down"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-column">
+                    <h3>Harmonic Tension System</h3>
+                    <p>A revolutionary approach to proportional racket stringing using acoustic resonance principles to ensure uniform string bed compliance without complex calculations.</p>
+                </div>
+                
+                <div class="footer-column">
+                    <h3>Technical Resources</h3>
+                    <ul class="footer-links">
+                        <li><a href="#mathematics">Mathematical Formulas</a></li>
+                        <li><a href="#methodology">Methodology Guide</a></li>
+                        <li><a href="#demonstration">Video Demonstration</a></li>
+                        <li><a href="#documents">Research Papers</a></li>
+                        <li><a href="#comparison">Comparison Data</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-column">
+                    <h3>Contact</h3>
+                    <div class="contact-info">
+                        <div class="contact-item">
+                            <i class="fas fa-envelope"></i>
+                            <span>yurig@leadsmarket.com</span>
+                        </div>
+                        <div class="contact-item">
+                            <i class="fas fa-phone"></i>
+                            <span>+1 (818) 224-0530</span>
+                        </div>
+                        <div class="contact-item">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <span>Sports Innovation </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="copyright">
+                <p>&copy; 2024 Harmonic Tension System. All rights reserved. | Patent-pending technology. Research based on "Static Equilibrium" and "Dynamic Model" studies.</p>
+                <p style="margin-top: 0.5rem; font-size: 0.8rem;">This webpage presents a theoretical innovation in tennis racket stringing methodology.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Mobile menu functionality
+        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+        const mainNav = document.getElementById('mainNav');
+        
+        mobileMenuBtn.addEventListener('click', function() {
+            mainNav.classList.toggle('active');
+            const icon = mobileMenuBtn.querySelector('i');
+            if (mainNav.classList.contains('active')) {
+                icon.classList.remove('fa-bars');
+                icon.classList.add('fa-times');
+            } else {
+                icon.classList.remove('fa-times');
+                icon.classList.add('fa-bars');
+            }
+        });
+        
+        // Close mobile menu when clicking on a link
+        const navLinks = document.querySelectorAll('nav a');
+        navLinks.forEach(link => {
+            link.addEventListener('click', function() {
+                if (mainNav.classList.contains('active')) {
+                    mainNav.classList.remove('active');
+                    const icon = mobileMenuBtn.querySelector('i');
+                    icon.classList.remove('fa-times');
+                    icon.classList.add('fa-bars');
+                }
+            });
+        });
+        
+        // Smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                const targetId = this.getAttribute('href');
+                if (targetId === '#') return;
+                
+                const targetElement = document.querySelector(targetId);
+                if (targetElement) {
+                    window.scrollTo({
+                        top: targetElement.offsetTop - 80,
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+        
+        // Highlight active section in navigation
+        window.addEventListener('scroll', function() {
+            const sections = document.querySelectorAll('section[id]');
+            const navLinks = document.querySelectorAll('nav a');
+            
+            let current = '';
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop - 100;
+                const sectionHeight = section.clientHeight;
+                if (scrollY >= sectionTop && scrollY < sectionTop + sectionHeight) {
+                    current = section.getAttribute('id');
+                }
+            });
+            
+            navLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href').substring(1) === current) {
+                    link.classList.add('active');
+                }
+            });
+        });
+
+        // Check if YouTube video loads properly
+        document.addEventListener('DOMContentLoaded', function() {
+            const videoIframe = document.querySelector('.video-container iframe');
+            const videoFallback = document.getElementById('videoFallback');
+            
+            // Check if iframe loaded successfully after a delay
+            setTimeout(function() {
+                if (videoIframe) {
+                    videoIframe.addEventListener('load', function() {
+                        // If iframe loads, hide fallback
+                        videoFallback.style.display = 'none';
+                    });
+                    
+                    videoIframe.addEventListener('error', function() {
+                        // If iframe fails to load, show fallback
+                        videoFallback.style.display = 'flex';
+                    });
+                    
+                    // Manual check after 3 seconds
+                    setTimeout(function() {
+                        try {
+                            // Try to access iframe content to check if it loaded
+                            if (videoIframe.contentWindow && videoIframe.contentWindow.document) {
+                                // If we can access content, it's loaded
+                                videoFallback.style.display = 'none';
+                            }
+                        } catch (e) {
+                            // Can't access due to CORS, but that's normal for YouTube
+                            // The error event should handle actual failures
+                        }
+                    }, 3000);
+                }
+            }, 1000);
+        });
+    </script>
+</body>
+</html>

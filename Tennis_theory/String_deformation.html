@@ -1,0 +1,365 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tennis String Deformation Analysis</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f7fa;
+            color: #333;
+            line-height: 1.6;
+            padding: 20px;
+            background-image: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            padding: 0;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #1a2980, #26d0ce);
+            color: white;
+            padding: 25px 40px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+        }
+        
+        .author-info {
+            flex: 1;
+            min-width: 300px;
+        }
+        
+        .author-name {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+        
+        .author-title {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            margin-bottom: 5px;
+        }
+        
+        .author-location {
+            font-size: 1rem;
+            opacity: 0.8;
+        }
+        
+        .author-photo {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 4px solid white;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .content {
+            padding: 40px;
+        }
+        
+        .intro-section {
+            margin-bottom: 40px;
+            padding-bottom: 30px;
+            border-bottom: 1px solid #eaeaea;
+        }
+        
+        .intro-text p {
+            margin-bottom: 20px;
+            font-size: 1.1rem;
+            line-height: 1.7;
+        }
+        
+        .key-point {
+            background-color: #e6f7ff;
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 4px solid #1890ff;
+            margin: 25px 0;
+        }
+        
+        .key-point h3 {
+            color: #1890ff;
+            margin-bottom: 10px;
+            font-size: 1.3rem;
+        }
+        
+        h2 {
+            color: #1a2980;
+            font-size: 1.8rem;
+            margin: 30px 0 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #eaeaea;
+        }
+        
+        .analysis-section {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 40px;
+            margin: 40px 0;
+        }
+        
+        .analysis-content {
+            flex: 1;
+            min-width: 300px;
+        }
+        
+        .analysis-images {
+            flex: 1;
+            min-width: 300px;
+        }
+        
+        .image-container {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .calculation-image {
+            max-width: 100%;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            margin-bottom: 10px;
+        }
+        
+        .image-caption {
+            font-size: 0.95rem;
+            color: #666;
+            font-style: italic;
+        }
+        
+        .formula-box {
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border: 1px solid #eaeaea;
+            overflow-x: auto;
+        }
+        
+        .formula {
+            font-family: 'Cambria', 'Times New Roman', serif;
+            font-size: 1.2rem;
+            text-align: center;
+            padding: 10px;
+            margin: 15px 0;
+        }
+        
+        .variable-def {
+            margin: 15px 0;
+            padding-left: 20px;
+        }
+        
+        .variable {
+            font-weight: 600;
+            color: #1a2980;
+        }
+        
+        .conclusion {
+            background-color: #f0f9ff;
+            padding: 30px;
+            border-radius: 8px;
+            margin: 40px 0;
+            border: 2px solid #26d0ce;
+        }
+        
+        .conclusion h3 {
+            color: #1a2980;
+            margin-bottom: 15px;
+            font-size: 1.5rem;
+        }
+        
+        .conclusion p {
+            font-size: 1.1rem;
+            line-height: 1.7;
+        }
+        
+        .footer {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+            font-size: 0.9rem;
+            border-top: 1px solid #eaeaea;
+            margin-top: 40px;
+        }
+        
+        .divider {
+            height: 1px;
+            background: linear-gradient(to right, transparent, #ccc, transparent);
+            margin: 30px 0;
+        }
+        
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .author-info {
+                margin-bottom: 20px;
+            }
+            
+            .content {
+                padding: 20px;
+            }
+            
+            .analysis-section {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="author-info">
+                <h1 class="author-name">Yuri G, PhD</h1>
+                <p class="author-title">Senior Tennis Player</p>
+                <p class="author-location">Plummer Park, Los Angeles</p>
+            </div>
+            <img src="images/Yuri-CityWalk-70.jpg" alt="Yuri G" class="author-photo">
+        </div>
+        
+        <div class="content">
+            <div class="intro-section">
+                <h2>Analysis of String Deformation in Tennis Rackets</h2>
+                
+                <div class="intro-text">
+                    <p>Statistics show that the main parameters of a tennis racket are: power of the shot and control (accuracy) of the shot.</p>
+                    
+                    <p>It is known that these parameters are determined both by the design features of the racket itself and by the mechanical characteristics of the strings. However, one of the most important parameters, namely shot control, is largely determined by the distribution of string flexibility in the transverse direction across the racket's surface.</p>
+                    
+                    <div class="key-point">
+                        <h3>Research Objective</h3>
+                        <p>This report presents a first attempt to construct an approximate model of elastic string deformation with the aim of obtaining recommendations for stringing technology.</p>
+                    </div>
+                    
+                    <p>To solve this problem, we consider the elastic problem of deformation of a single string rigidly clamped at both ends with an initial tension T₀ and length L₀.</p>
+                </div>
+            </div>
+            
+            <div class="analysis-section">
+                <div class="analysis-content">
+                    <h2>Mathematical Model</h2>
+                    
+                    <p>By simulating the impact of the ball with the application of force F at the center of the string, we consider the deformation model presented in the figures.</p>
+                    
+                    <div class="formula-box">
+                        <h3>Key Variables</h3>
+                        
+                        <div class="variable-def">
+                            <p><span class="variable">T_total</span> - Total string tension after applying force F</p>
+                        </div>
+                        
+                        <div class="variable-def">
+                            <p><span class="variable">T₀</span> - Initial string tension</p>
+                        </div>
+                        
+                        <div class="variable-def">
+                            <p><span class="variable">ΔT</span> - Additional string tension caused by force F</p>
+                        </div>
+                        
+                        <div class="formula">
+                            T_total = T₀ + ΔT
+                        </div>
+                        
+                        <div class="variable-def">
+                            <p><span class="variable">k</span> - Longitudinal compliance of the string</p>
+                            <p>where: k = L₀/(E·A)</p>
+                            <p>E - Elastic modulus of the string material</p>
+                            <p>A - Cross-sectional area of the string</p>
+                        </div>
+                    </div>
+                    
+                    <h3>Deflection Analysis</h3>
+                    <p>The deflection at the center of the string is determined from the analysis of the deformed state of the string (Fig. 1).</p>
+                    
+                    <div class="formula-box">
+                        <div class="formula">
+                            δ = √(L² - L₀²)/2
+                        </div>
+                        <p>where δ is the deflection at the center of the string, and L is the total length of the deformed string.</p>
+                    </div>
+                    
+                    <p>From the equilibrium condition of the node (Fig. 2), we obtain the equation:</p>
+                    
+                    <div class="formula-box">
+                        <div class="formula">
+                            F = 2·T·sin(θ)
+                        </div>
+                        <p>where F is the transverse force caused by the ball impact.</p>
+                    </div>
+                </div>
+                
+                <div class="analysis-images">
+                    <div class="image-container">
+                        <img src="string_loads.PNG" alt="String deformation model" class="calculation-image">
+                        <p class="image-caption">Fig. 1 & 2 - String deformation under impact force</p>
+                    </div>
+                    
+                    <div class="image-container">
+                        <img src="./Full_calculation_images/IMG0014_16403953.PNG" alt="Force equilibrium equation" class="calculation-image">
+                        <p class="image-caption">Force equilibrium at the impact point</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="divider"></div>
+            
+            <h2>Transverse Compliance Analysis</h2>
+            
+            <p>We define the transverse compliance of the string C at the point of force application F as the ratio:</p>
+            
+            <div class="formula-box">
+                <div class="formula">
+                    C = δ/F = (L₀/4) / (T₀ + ΔT/2)
+                </div>
+            </div>
+            
+            <p>For small deflections, where T₀ is significantly greater than ΔT, we can simplify the expression:</p>
+            
+            <div class="formula-box">
+                <div class="formula">
+                    C ≈ L₀/(4T₀)
+                </div>
+            </div>
+            
+            <p>From formula (2) it follows that the constancy of the transverse compliance of the string is ensured by the constancy of the ratio T₀ to L₀:</p>
+            
+            <div class="formula-box">
+                <div class="formula">
+                    T₀/L₀ = constant
+                </div>
+            </div>
+            
+            <div class="conclusion">
+                <h3>Practical Conclusion</h3>
+                <p>The obtained relationship (3) can be used as the basis for calculating all strings of the racket, starting from the initial tension value of the primary string. To ensure equal compliance of strings across the entire racket surface, it is necessary to maintain a constant ratio of their tension to their length.</p>
+                
+                <p>This principle provides a theoretical foundation for optimizing stringing patterns to achieve consistent ball response across the entire string bed, which is crucial for shot control and accuracy in tennis.</p>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>Tennis Racket Physics Analysis &copy; 2023 | Based on Elastic Deformation Theory</p>
+            <p>Images located in "Full_calculation_images" folder</p>
+        </div>
+    </div>
+</body>
+</html>
